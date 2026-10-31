@@ -1,0 +1,269 @@
+<title>Trust Router</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one column. Verdict strip, then the curve you can drag, then the sorted queue. */
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --line:#dfe3ea;
+  --fg:#15191f; --muted:#5d6878; --faint:#8b94a3;
+  --accent:#0f6f8c;
+  --good:#1b7a4b; --good-bg:#e4f3ea;
+  --warn:#9a6508; --warn-bg:#fdf1dc;
+  --stop:#a03030; --stop-bg:#fae8e8;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11141a; --panel:#181d25; --line:#2a3240;
+  --fg:#e8ecf2; --muted:#9aa5b5; --faint:#6f7a8a;
+  --accent:#4fb8d6;
+  --good:#5cc98c; --good-bg:#14301f;
+  --warn:#e0a94a; --warn-bg:#33270f;
+  --stop:#e07a7a; --stop-bg:#331818;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#11141a; --panel:#181d25; --line:#2a3240;
+  --fg:#e8ecf2; --muted:#9aa5b5; --faint:#6f7a8a;
+  --accent:#4fb8d6;
+  --good:#5cc98c; --good-bg:#14301f;
+  --warn:#e0a94a; --warn-bg:#33270f;
+  --stop:#e07a7a; --stop-bg:#331818;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 56px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font-size:1.6rem;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Verdict strip: the three numbers that are the result. */
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.v{background:var(--panel);padding:16px 18px}
+.v .k{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.v .n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.9rem;font-weight:600;line-height:1.15;margin-top:6px}
+.v .d{font-size:.8rem;color:var(--muted);margin-top:2px}
+.v.hi .n{color:var(--accent)}
+@media(max-width:560px){.verdict{grid-template-columns:1fr}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.panel h2{font-size:1rem;font-weight:600;margin:0 0 4px}
+.panel p.note{color:var(--muted);font-size:.85rem;margin:0 0 14px;max-width:62ch}
+
+/* Slider readout */
+.readout{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 18px;margin-bottom:12px}
+.readout .big{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:2.1rem;font-weight:600;color:var(--accent);line-height:1}
+.readout .lab{color:var(--muted);font-size:.88rem}
+input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0 0}
+.scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-top:2px}
+
+/* Tier table */
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--faint);font-weight:500;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:10px 10px 10px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:3px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;font-weight:500}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.ACT_ON{color:var(--good);background:var(--good-bg)}
+.CHECK{color:var(--warn);background:var(--warn-bg)}
+.SET_ASIDE{color:var(--stop);background:var(--stop-bg)}
+
+/* Queue */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.filters button{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.filters button[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.filters button:focus-visible,details:focus-within>summary{outline:2px solid var(--accent);outline-offset:2px}
+
+.row{border:1px solid var(--line);border-radius:8px;background:var(--panel);margin-bottom:8px}
+.row summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;
+  grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.row summary::-webkit-details-marker{display:none}
+.row .q{font-size:.88rem;min-width:0;overflow-wrap:anywhere}
+.row .t{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);white-space:nowrap}
+.body{padding:0 14px 14px;border-top:1px solid var(--line);margin-top:2px}
+.sig{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.sig:last-child{border-bottom:0}
+.sig .mark{font-family:var(--mono);font-weight:600;width:1.4em;flex:none}
+.up{color:var(--good)} .down{color:var(--stop)} .flat{color:var(--faint)}
+.sig .txt strong{font-weight:600;display:block}
+.sig .txt span{color:var(--muted)}
+.truth{margin-top:12px;padding:10px 12px;border-radius:6px;background:var(--bg);font-size:.85rem;color:var(--muted)}
+.truth b{color:var(--fg);font-weight:600}
+footer{color:var(--faint);font-size:.78rem;max-width:62ch}
+footer a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">BixBench · 296 bioinformatics questions</p>
+    <h1>Which of the agent's answers are worth your time?</h1>
+    <p class="sub">The agent is right about a third of the time and sounds equally sure either way.
+      This sorts its answers using signals about how each one was produced, never the answer itself.
+      The real results are revealed only to score the sorting.</p>
+  </header>
+
+  <section class="verdict" id="verdict"></section>
+
+  <section class="panel">
+    <h2>Accept only the most-trusted answers</h2>
+    <p class="note">Drag to choose how much of the output you accept. Accept everything and you get the
+      agent's raw accuracy. Accept only the top slice and accuracy climbs, because the sorting put the
+      sound answers there.</p>
+    <div class="readout">
+      <span class="big" id="curveAcc">—</span>
+      <span class="lab">accurate, accepting the top <b class="num" id="curveCov">—</b>
+        (<span class="num" id="curveN">—</span> of 296 answers)</span>
+    </div>
+    <input type="range" id="cov" min="5" max="100" step="5" value="20" aria-label="Share of answers accepted">
+    <div class="scale"><span>top 5%</span><span>accept everything</span></div>
+    <svg id="curve" viewBox="0 0 680 230" role="img" aria-label="Accuracy falls as more answers are accepted" style="width:100%;height:auto;margin-top:16px"></svg>
+  </section>
+
+  <section class="panel">
+    <h2>The three tiers</h2>
+    <p class="note">Plain code assigns the tier from the signals. No model sets it, and a signal can
+      lower trust but never raise it.</p>
+    <table>
+      <thead><tr><th>Tier</th><th>Share of answers</th><th class="n">Count</th><th class="n">Accuracy</th></tr></thead>
+      <tbody id="tiers"></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Every answer, most trusted first</h2>
+    <p class="note">Open one to see which signals fired and what the answer turned out to be.</p>
+    <div class="filters" id="filters">
+      <button data-f="all" aria-pressed="true">All</button>
+      <button data-f="ACT_ON" aria-pressed="false">Act on it</button>
+      <button data-f="CHECK" aria-pressed="false">Check first</button>
+      <button data-f="SET_ASIDE" aria-pressed="false">Set aside</button>
+    </div>
+    <div id="rows"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const pct = x => (x*100).toFixed(1) + '%';
+const pct0 = x => Math.round(x*100) + '%';
+const LABEL = {ACT_ON:'Act on it', CHECK:'Check first', SET_ASIDE:'Set aside'};
+const COLOR = {ACT_ON:'var(--good)', CHECK:'var(--warn)', SET_ASIDE:'var(--stop)'};
+
+const top = D.tiers.ACT_ON;
+document.getElementById('verdict').innerHTML = `
+  <div class="v"><div class="k">Agent alone</div><div class="n">${pct(D.overall_accuracy)}</div>
+    <div class="d">across all 296 answers</div></div>
+  <div class="v hi"><div class="k">Top tier</div><div class="n">${pct(top.accuracy)}</div>
+    <div class="d">${top.n} answers, ${pct0(top.coverage)} of the total</div></div>
+  <div class="v"><div class="k">Improvement</div><div class="n">${D.lift.toFixed(1)}×</div>
+    <div class="d">random sorting never matched it in 2,000 tries</div></div>`;
+
+document.getElementById('tiers').innerHTML = ['ACT_ON','CHECK','SET_ASIDE'].map(k => {
+  const t = D.tiers[k];
+  return `<tr>
+    <td><span class="pill ${k}">${LABEL[k]}</span></td>
+    <td><div class="bar"><i style="width:${t.coverage*100}%;background:${COLOR[k]}"></i></div></td>
+    <td class="n">${t.n}</td><td class="n">${pct(t.accuracy)}</td></tr>`;
+}).join('');
+
+// The curve: accuracy against how much of the output you accept.
+(function drawCurve(){
+  const W=680,H=230,L=52,R=16,T=18,B=38, pts=D.curve;
+  const x = c => L + (c-0.05)/0.95*(W-L-R);
+  const yMax = 1.0;
+  const y = a => T + (1-a/yMax)*(H-T-B);
+  const grid = [0,0.25,0.5,0.75,1.0].map(v =>
+    `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>
+     <text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" font-family="var(--mono)"
+       fill="var(--faint)">${Math.round(v*100)}%</text>`).join('');
+  const line = pts.map((p,i)=>`${i?'L':'M'}${x(p.coverage).toFixed(1)} ${y(p.accuracy).toFixed(1)}`).join(' ');
+  const area = `${line} L${x(1)} ${y(0)} L${x(0.05)} ${y(0)} Z`;
+  const base = `<line x1="${L}" x2="${W-R}" y1="${y(D.overall_accuracy)}" y2="${y(D.overall_accuracy)}"
+      stroke="var(--muted)" stroke-width="1.25" stroke-dasharray="4 4"/>
+    <text x="${W-R}" y="${y(D.overall_accuracy)-7}" text-anchor="end" font-size="11"
+      font-family="var(--mono)" fill="var(--muted)">agent alone, ${pct(D.overall_accuracy)}</text>`;
+  const ticks = [0.05,0.25,0.5,0.75,1.0].map(c =>
+    `<text x="${x(c)}" y="${H-14}" text-anchor="middle" font-size="11" font-family="var(--mono)"
+      fill="var(--faint)">${Math.round(c*100)}%</text>`).join('');
+  document.getElementById('curve').innerHTML = `
+    ${grid}
+    <path d="${area}" fill="var(--accent)" fill-opacity="0.10"/>
+    ${base}
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.25"
+      stroke-linejoin="round" stroke-linecap="round"/>
+    ${ticks}
+    <text x="${(L+W-R)/2}" y="${H-1}" text-anchor="middle" font-size="11"
+      font-family="var(--mono)" fill="var(--faint)">share of answers accepted</text>
+    <circle id="dot" r="5" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/>`;
+  window.__x = x; window.__y = y;
+})();
+
+const cov = document.getElementById('cov');
+function updateCurve(){
+  const c = +cov.value/100;
+  const p = D.curve.reduce((best,q)=> Math.abs(q.coverage-c) < Math.abs(best.coverage-c) ? q : best);
+  document.getElementById('curveAcc').textContent = pct(p.accuracy);
+  document.getElementById('curveCov').textContent = pct0(p.coverage);
+  document.getElementById('curveN').textContent = p.n;
+  const dot = document.getElementById('dot');
+  dot.setAttribute('cx', window.__x(p.coverage)); dot.setAttribute('cy', window.__y(p.accuracy));
+}
+cov.addEventListener('input', updateCurve);
+updateCurve();
+
+const rowsEl = document.getElementById('rows');
+let filter = 'all';
+function renderRows(){
+  const list = D.rows.filter(r => filter==='all' || r.tier===filter).slice(0,120);
+  rowsEl.innerHTML = list.map(r => `
+    <details class="row">
+      <summary>
+        <span class="pill ${r.tier}">${LABEL[r.tier]}</span>
+        <span class="q">${esc(r.question)}</span>
+        <span class="t">${r.trust.toFixed(2)}</span>
+      </summary>
+      <div class="body">
+        ${r.signals.map(s => `<div class="sig">
+            <span class="mark ${s.vote>0?'up':s.vote<0?'down':'flat'}">${s.vote>0?'+':s.vote<0?'−':'·'}</span>
+            <span class="txt"><strong>${esc(s.name)}</strong><span>${esc(s.detail)}</span></span>
+          </div>`).join('')}
+        <div class="truth">Revealed only for scoring — the agent's answer was
+          <b>${r.was_correct ? 'correct' : 'wrong'}</b>.</div>
+      </div>
+    </details>`).join('');
+  if (list.length === 120) rowsEl.insertAdjacentHTML('beforeend',
+    '<p class="note" style="margin:12px 0 0">Showing the first 120 of this tier.</p>');
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+document.getElementById('filters').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  filter = b.dataset.f;
+  [...e.currentTarget.children].forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+  renderRows();
+});
+renderRows();
+
+document.getElementById('foot').innerHTML =
+  `Benchmark: ${esc(D.benchmark)}. Signals: whether each model stood behind its answer when offered
+   "I don't know", whether two independently-run models agreed, and how often other runs answered the
+   same question correctly${D.used_llm_referee ? ', plus a Claude reviewer' : ''}.
+   The top tier holds ${top.n} answers, so its true accuracy is roughly ${pct0(Math.max(0,top.accuracy-0.19))}
+   to ${pct0(Math.min(1,top.accuracy+0.19))}.`;
+</script>

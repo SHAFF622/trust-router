@@ -1,0 +1,541 @@
+{
+  "source": "/Users/shafeeq/ai-scientist/kosmos-community/artifacts",
+  "n": 20,
+  "counts": {
+    "ACT_ON": 19,
+    "CHECK": 1,
+    "SET_ASIDE": 0
+  },
+  "rows": [
+    {
+      "id": "249d6818-1dd",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_2",
+      "statement": "Enzyme activity increases with temperature up to an optimal point (approximately 37\u00b0C for mammalian enzymes), then sharply decreases due to thermal denaturation, following a characteristic bell-shaped curve.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "748 characters of separate argument."
+        },
+        {
+          "name": "Found in more than one cycle",
+          "vote": 1,
+          "detail": "A near-identical claim appears in 2 cycles."
+        }
+      ]
+    },
+    {
+      "id": "9f60d361-c39",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_1",
+      "statement": "Enzyme activity increases with temperature up to an optimal point (approximately 37\u00b0C for mammalian enzymes), then sharply decreases due to thermal denaturation, following a characteristic bell-shaped curve when measured by reaction rate.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "825 characters of separate argument."
+        },
+        {
+          "name": "Found in more than one cycle",
+          "vote": 1,
+          "detail": "A near-identical claim appears in 2 cycles."
+        }
+      ]
+    },
+    {
+      "id": "9feff6f4-8e8",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_1",
+      "statement": "Increasing temperature from 20\u00b0C to 40\u00b0C will increase enzyme activity by 50-80% due to enhanced molecular motion and collision frequency, with activity peaking at 37\u00b0C followed by a sharp decline above 45\u00b0C due to denaturation.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "715 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "67a22d1f-fc5",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_1",
+      "statement": "Temperature increases from 25\u00b0C to 45\u00b0C will cause a progressive shift in enzyme kinetics from Michaelis-Menten saturation kinetics at lower temperatures to first-order kinetics at higher temperatures due to thermal effects on enzyme-substrate complex stability.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "743 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "b9cb01a1-92f",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_2",
+      "statement": "Temperature affects enzyme activity by altering the activation energy barrier, with each 10\u00b0C increase in temperature doubling the reaction rate (Q10 = 2) until denaturation occurs, following Arrhenius kinetics.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "740 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "c7894b64-faa",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_3",
+      "statement": "Increasing temperature from 20\u00b0C to 40\u00b0C will increase enzyme activity by at least 50% due to enhanced molecular motion and collision frequency, but further increases to 60\u00b0C will decrease activity by at least 80% due to protein denaturation.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "808 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "829a8a43-43d",
+      "run": "baseline_no_literature",
+      "cycle": "cycle_3",
+      "statement": "Temperature increases from 25\u00b0C to 45\u00b0C will cause a logarithmic increase in enzyme reaction rates with a Q10 coefficient between 2.0 and 3.0, indicating that reaction rates approximately double to triple for every 10\u00b0C temperature increase within this range.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "836 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "8fc3d839-ab2",
+      "run": "baseline_run",
+      "cycle": "cycle_1",
+      "statement": "Increasing temperature from 20\u00b0C to 40\u00b0C will increase the reaction rate of the enzyme catalase by at least 50% when measured by the rate of oxygen production from hydrogen peroxide decomposition.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "674 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "f1bcaf81-e25",
+      "run": "baseline_run",
+      "cycle": "cycle_1",
+      "statement": "Exposure to temperatures above 50\u00b0C for 10 minutes will cause irreversible denaturation of amylase, reducing its activity by at least 80% compared to controls maintained at 37\u00b0C, as measured by starch hydrolysis rate.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "716 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "21f36a68-faa",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_1",
+      "statement": "Temperature-induced changes in membrane fluidity affect the activity of membrane-bound enzymes more significantly than soluble enzymes, with fluidity increases enhancing activity up to a threshold, after which membrane disintegration causes rapid decline.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "842 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "6ccfd092-5d9",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_2",
+      "statement": "Increasing temperature from 20\u00b0C to 40\u00b0C will increase enzyme activity by 50-200% due to enhanced molecular motion and collision frequency, with optimal activity occurring between 35-40\u00b0C followed by a sharp decline above 45\u00b0C due to denaturation.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "742 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "2f146c64-cb6",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_2",
+      "statement": "Temperature stress (35-45\u00b0C) will induce a 30-60% increase in the production of heat shock proteins and molecular chaperones in microbial communities, which in turn will maintain enzyme activity stability by reducing thermal denaturation rates by 40-70% compared to unstressed controls.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "746 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "e66e4da1-3f6",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_3",
+      "statement": "Increasing temperature from 20\u00b0C to 40\u00b0C will increase the catalytic rate of the enzyme catalase by at least 50% when measured using hydrogen peroxide decomposition assays.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "777 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "fcd7d012-a2b",
+      "run": "baseline_with_literature",
+      "cycle": "cycle_3",
+      "statement": "Enzyme thermal stability will decrease by more than 30% when temperature exceeds 45\u00b0C due to irreversible protein denaturation, as measured by circular dichroism spectroscopy and activity assays.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "842 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "359eb276-eee",
+      "run": "claude_haiku",
+      "cycle": "cycle_1",
+      "statement": "Enzyme activity increases linearly with temperature from 0\u00b0C to an optimal temperature (typically 37-40\u00b0C for mammalian enzymes), then decreases sharply above this temperature due to protein denaturation, with the rate of activity decline above optimal temperature being steeper than the rate of increase below it.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "944 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "3c9a3770-c5b",
+      "run": "claude_haiku",
+      "cycle": "cycle_1",
+      "statement": "The temperature coefficient (Q10) for enzyme activity varies inversely with substrate concentration, such that enzymes operating at saturating substrate concentrations exhibit lower Q10 values (1.5-2.0) compared to enzymes operating at limiting substrate concentrations (2.5-4.0), indicating that temperature sensitivity is substrate-dependent.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "1007 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "3b63aa5f-f56",
+      "run": "deepseek",
+      "cycle": "cycle_1",
+      "statement": "Enzyme activity increases with temperature up to an optimal temperature of 37\u00b0C, then sharply declines due to thermal denaturation, with maximum activity occurring between 35-40\u00b0C for mammalian enzymes.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "675 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "40e871d6-c52",
+      "run": "deepseek",
+      "cycle": "cycle_1",
+      "statement": "Temperature stress induces increased production of heat shock proteins that protect enzyme structure, maintaining higher enzymatic activity under thermal stress conditions compared to enzymes without such protective mechanisms.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "730 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "aaa8daa3-f15",
+      "run": "gpt4o_mini",
+      "cycle": "cycle_1",
+      "statement": "Decreasing temperature will reduce the rate of enzyme-catalyzed reactions by slowing molecular motion and decreasing substrate binding efficiency.",
+      "domain": "biology",
+      "tier": "ACT_ON",
+      "trust": 0.875,
+      "signals": [
+        {
+          "name": "States something measurable",
+          "vote": 1,
+          "detail": "Names a direction, quantity or comparison you could test."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "645 characters of separate argument."
+        }
+      ]
+    },
+    {
+      "id": "9f7799e6-25e",
+      "run": "gpt4o_mini",
+      "cycle": "cycle_1",
+      "statement": "Increasing temperature will enhance the catalytic activity of enzyme X up to an optimal temperature, beyond which the activity will decline.",
+      "domain": "biology",
+      "tier": "CHECK",
+      "trust": 0.625,
+      "signals": [
+        {
+          "name": "Nothing measurable stated",
+          "vote": -1,
+          "detail": "No quantity, direction or comparison, so no experiment settles it."
+        },
+        {
+          "name": "Stated plainly",
+          "vote": 1,
+          "detail": "Committed to a definite claim rather than hedging."
+        },
+        {
+          "name": "Reasoning adds support",
+          "vote": 1,
+          "detail": "611 characters of separate argument."
+        }
+      ]
+    }
+  ]
+}

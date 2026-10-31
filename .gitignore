@@ -1,0 +1,14 @@
+# Secrets
+.env
+*.pem
+*.key
+
+# Rebuilt or regenerated
+.venv/
+__pycache__/
+*.pyc
+runs/
+*.log
+
+# Large data, fetched by fetch_benchmark.py
+data/*_protein.pdb

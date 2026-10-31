@@ -1,0 +1,143 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ask the panel</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b23;--raised:#1d242e;--line:#283140;--fg:#e8edf4;
+--muted:#94a0b0;--accent:#56b6d8;--add:#9b8cf0;--good:#5cc98c;--warn:#e3a94b;--stop:#e07a7a;
+--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;padding:26px 18px 60px;background:var(--bg);color:var(--fg);
+font:14px/1.55 system-ui,-apple-system,sans-serif}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:1.35rem;margin:0}
+.sub{color:var(--muted);margin:4px 0 0;font-size:.86rem;max-width:62ch}
+h2{font-size:.92rem;margin:0 0 10px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+textarea{width:100%;min-height:76px;background:var(--raised);color:var(--fg);
+border:1px solid var(--line);border-radius:8px;padding:11px 12px;font:inherit;resize:vertical}
+textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+button{background:var(--accent);color:#06222c;border:0;border-radius:8px;
+padding:9px 18px;font-weight:600;font-size:.9rem;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+label{color:var(--muted);font-size:.83rem}
+input[type=number]{width:72px;background:var(--raised);color:var(--fg);
+border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--mono)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chip{background:var(--raised);border:1px solid var(--line);color:var(--muted);
+border-radius:999px;padding:5px 11px;font-size:.79rem;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--fg)}
+.stat{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.83rem;margin-top:10px}
+.stat b{color:var(--fg);font-family:var(--mono)}
+.steps{font-family:var(--mono);font-size:.78rem;max-height:180px;overflow:auto;
+background:var(--raised);border-radius:8px;padding:10px 12px}
+.steps div{color:var(--muted);padding:1px 0}
+.steps div.done{color:var(--good)}
+.claim{border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:9px;background:var(--raised)}
+.claim.ACT_ON{border-left:3px solid var(--good)}
+.claim.CHECK{border-left:3px solid var(--warn)}
+.claim.SET_ASIDE{border-left:3px solid var(--stop)}
+.ch{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.pill{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
+padding:2px 8px;border-radius:999px;white-space:nowrap;flex:none}
+.p-ACT_ON{color:var(--good);background:#14301f}
+.p-CHECK{color:var(--warn);background:#33270f}
+.p-SET_ASIDE{color:var(--stop);background:#331818}
+.v{display:flex;gap:9px;font-size:.81rem;padding:5px 0;border-top:1px solid var(--line);margin-top:8px}
+.v:first-of-type{margin-top:10px}
+.m{font-family:var(--mono);font-weight:600;flex:none;width:1.2em}
+.up{color:var(--good)} .down{color:var(--stop)} .flat{color:var(--muted)}
+.v span.d{color:var(--muted)}
+.papers li{color:var(--muted);font-size:.82rem;margin-bottom:4px}
+.papers a{color:var(--accent)}
+.err{color:var(--stop);font-size:.85rem}
+footer{color:var(--muted);font-size:.77rem}
+</style></head><body><div class="wrap">
+
+<header><h1>Ask the panel</h1>
+<p class="sub">An analyst proposes findings, a librarian checks them against published
+papers, and a reviewer judges whether the evidence holds. Plain code decides what you
+can act on. No model assigns a verdict.</p></header>
+
+<section>
+  <h2>Your question</h2>
+  <textarea id="q" placeholder="e.g. Does higher ESR1 expression predict better survival in ER-positive breast cancer?"></textarea>
+  <div class="chips" id="chips"></div>
+  <div class="row">
+    <button id="go">Run the panel</button>
+    <label>Budget $<input type="number" id="budget" value="2" min="0.5" max="20" step="0.5"></label>
+    <span class="sub" id="status">Idle.</span>
+  </div>
+  <div class="stat"><span>Calls <b id="calls">0</b></span><span>Spent $<b id="spend">0.00</b></span></div>
+  <p class="err" id="err"></p>
+</section>
+
+<section><h2>What the agents are doing</h2>
+  <div class="steps" id="steps"><div>Nothing running.</div></div></section>
+
+<section><h2>Findings, sorted by what you can act on</h2>
+  <div id="claims"><p class="sub">Ask a question to begin.</p></div></section>
+
+<section><h2>Papers the librarian read</h2>
+  <ul class="papers" id="papers"><li>None yet.</li></ul></section>
+
+<footer>Runs locally. Each finding shows every signal behind its verdict.</footer>
+</div>
+
+<script>
+const EXAMPLES = [
+  "Does higher ESR1 expression predict better survival in ER-positive breast cancer?",
+  "Which molecular properties best predict protein-ligand binding affinity?",
+  "Do TP53 mutation rates differ by genetic ancestry in breast cancer?",
+  "What limits the accuracy of AI agents on bioinformatics analysis tasks?"
+];
+const $ = id => document.getElementById(id);
+const LABEL = {ACT_ON:"Act on it", CHECK:"Check first", SET_ASIDE:"Set aside"};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+$("chips").innerHTML = EXAMPLES.map(e =>
+  `<span class="chip">${esc(e.length > 58 ? e.slice(0,56)+"…" : e)}</span>`).join("");
+[...$("chips").children].forEach((c,i) => c.onclick = () => { $("q").value = EXAMPLES[i]; });
+
+$("go").onclick = async () => {
+  $("err").textContent = "";
+  const r = await fetch("/api/run", {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({question: $("q").value, budget: +$("budget").value})});
+  const b = await r.json();
+  if (b.error) $("err").textContent = b.error;
+};
+
+async function poll(){
+  try {
+    const s = await (await fetch("/api/state")).json();
+    $("status").textContent = {idle:"Idle.", running:"Running…", done:"Finished.",
+      error:"Stopped."}[s.status] || s.status;
+    $("go").disabled = s.status === "running";
+    $("calls").textContent = s.calls;
+    $("spend").textContent = s.spend.toFixed(2);
+    $("err").textContent = s.error || "";
+
+    $("steps").innerHTML = s.steps.length
+      ? s.steps.map(x => `<div class="${x.done?'done':''}">${x.done?'✓':'·'} ${esc(x.t)}</div>`).join("")
+      : "<div>Nothing running.</div>";
+    $("steps").scrollTop = $("steps").scrollHeight;
+
+    $("claims").innerHTML = s.claims.length ? [...s.claims]
+      .sort((a,b) => b.trust - a.trust).map(c => `
+        <div class="claim ${c.tier}">
+          <div class="ch"><div>${esc(c.text)}</div>
+            <span class="pill p-${c.tier}">${LABEL[c.tier]}</span></div>
+          ${c.votes.map(v => `<div class="v">
+            <span class="m ${v.v>0?'up':v.v<0?'down':'flat'}">${v.v>0?'+':v.v<0?'−':'·'}</span>
+            <span><b>${esc(v.n)}</b><br><span class="d">${esc(v.d)}</span></span></div>`).join("")}
+        </div>`).join("")
+      : '<p class="sub">Ask a question to begin.</p>';
+
+    $("papers").innerHTML = s.papers.length
+      ? s.papers.map(p => `<li><a href="https://pubmed.ncbi.nlm.nih.gov/${esc(p.pmid)}/"
+          target="_blank">PMID ${esc(p.pmid)}</a> — ${esc(p.title)}</li>`).join("")
+      : "<li>None yet.</li>";
+  } catch (e) { /* server restarting; next tick will catch up */ }
+}
+poll(); setInterval(poll, 1500);
+</script></body></html>
