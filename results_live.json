@@ -1,0 +1,1088 @@
+{
+  "benchmark": "BixBench, 40 questions, agents run live",
+  "overall_accuracy": 0.45,
+  "tiers": {
+    "ACT_ON": {
+      "n": 6,
+      "coverage": 0.15,
+      "accuracy": 0.5
+    },
+    "CHECK": {
+      "n": 11,
+      "coverage": 0.275,
+      "accuracy": 0.5454545454545454
+    },
+    "SET_ASIDE": {
+      "n": 23,
+      "coverage": 0.575,
+      "accuracy": 0.391304347826087
+    }
+  },
+  "curve": [
+    {
+      "coverage": 0.05,
+      "accuracy": 1.0,
+      "n": 2
+    },
+    {
+      "coverage": 0.1,
+      "accuracy": 0.5,
+      "n": 4
+    },
+    {
+      "coverage": 0.15,
+      "accuracy": 0.5,
+      "n": 6
+    },
+    {
+      "coverage": 0.2,
+      "accuracy": 0.5,
+      "n": 8
+    },
+    {
+      "coverage": 0.25,
+      "accuracy": 0.6,
+      "n": 10
+    },
+    {
+      "coverage": 0.3,
+      "accuracy": 0.5833333333333334,
+      "n": 12
+    },
+    {
+      "coverage": 0.35,
+      "accuracy": 0.5714285714285714,
+      "n": 14
+    },
+    {
+      "coverage": 0.4,
+      "accuracy": 0.5,
+      "n": 16
+    },
+    {
+      "coverage": 0.45,
+      "accuracy": 0.5555555555555556,
+      "n": 18
+    },
+    {
+      "coverage": 0.5,
+      "accuracy": 0.5,
+      "n": 20
+    },
+    {
+      "coverage": 0.55,
+      "accuracy": 0.5,
+      "n": 22
+    },
+    {
+      "coverage": 0.6,
+      "accuracy": 0.5,
+      "n": 24
+    },
+    {
+      "coverage": 0.65,
+      "accuracy": 0.5,
+      "n": 26
+    },
+    {
+      "coverage": 0.7,
+      "accuracy": 0.5,
+      "n": 28
+    },
+    {
+      "coverage": 0.75,
+      "accuracy": 0.4666666666666667,
+      "n": 30
+    },
+    {
+      "coverage": 0.8,
+      "accuracy": 0.4375,
+      "n": 32
+    },
+    {
+      "coverage": 0.85,
+      "accuracy": 0.4411764705882353,
+      "n": 34
+    },
+    {
+      "coverage": 0.9,
+      "accuracy": 0.4444444444444444,
+      "n": 36
+    },
+    {
+      "coverage": 0.95,
+      "accuracy": 0.4473684210526316,
+      "n": 38
+    },
+    {
+      "coverage": 1.0,
+      "accuracy": 0.45,
+      "n": 40
+    }
+  ],
+  "lift": 1.1111111111111112,
+  "p_value": 0.577,
+  "used_llm_referee": true,
+  "rows": [
+    {
+      "qid": "case-1b30adb0f2",
+      "question": "How many GO terms related to immune processes must show p-adj < 0.05 to establish significant enrichment of immune pathways in the dataset?",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "A \u2013 significance of enrichment is assessed per term using adjusted p-value, so a single immune-related GO term with p-adj < 0.05 establishes enrichment of that pathway.\n\nChecking the options: (B) a th",
+      "was_correct": true
+    },
+    {
+      "qid": "case-645f28505a",
+      "question": "What clinical feature or criterion should be used as an exclusion factor for patients recruited in the study",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "B \u2013 Confounding medical conditions (e.g., other diseases or treatments) are the standard clinical exclusion criterion, since they can bias the results. Sequencing depth is a technical QC filter, not a",
+      "was_correct": true
+    },
+    {
+      "qid": "case-b27a3ff446",
+      "question": "What is the proportion of likely somatic variants (VAF < 0.3) in BLM carriers relative to the total number of CHIP variants identified in this group?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "",
+      "was_correct": false
+    },
+    {
+      "qid": "case-d580342d96",
+      "question": "What is the percentage of CHIP variants with VAF between 0.3 and 0.7 in the Control Children cohort?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 65%. I could not recall the specific publication, so this is a best guess rather than a confirmed value.\n\nVariants with VAF of 0.3\u20130.7 in children are probably mostly germline heterozygous calls, ",
+      "was_correct": true
+    },
+    {
+      "qid": "case-d64c24e652",
+      "question": "What proportion of CHIP variants fall into the exonic regions of the genome?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "A \u2013 this is a best guess, not a recalled figure. I couldn't identify the specific study. Targeted CHIP panels cover mostly coding sequence, so a majority exonic share is likely, which favours the high",
+      "was_correct": false
+    },
+    {
+      "qid": "case-c217798acc",
+      "question": "What's the number of genes that are differentially regulated, when comparing final vs baseline blood?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "I can't identify the specific published analysis, so this is a best guess rather than a recalled result.\n\nComparing final vs baseline blood in a typical blood transcriptomic study, such as one trackin",
+      "was_correct": false
+    },
+    {
+      "qid": "case-991108fc9c",
+      "question": "How many genes show consistent differential expression across all three tissue comparisons (final vs baseline blood, dentate gyrus vs baseline blood, and dentate gyrus vs final blood)?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 The two large counts (10316, 11746) probably match the DG-versus-blood comparisons, which differ most. Final vs baseline blood likely gives a smaller set, perhaps 773. The three-way intersection c",
+      "was_correct": true
+    },
+    {
+      "qid": "case-816f66b2e2",
+      "question": "What is the Mann Whitney U value between fungi and animal DVMC values?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I could not recall this analysis, so this is a guess. A U value near half of n1\u00d7n",
+      "was_correct": false
+    },
+    {
+      "qid": "case-a3045de752",
+      "question": "What is the standard deviation of DVMC values among genes in the animal dataset?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I can't identify the source's DVMC definition or recall its reported value, so this is a guess. 0.28 and 0.30 are the closest candidates, and I picked 0.30. 0.56 and 0.15 seem less plausible.",
+      "was_correct": true
+    },
+    {
+      "qid": "case-dbee011e9a",
+      "question": "What is the highest DVMC value observed among animal genes?",
+      "tier": "CHECK",
+      "trust": 0.5,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "A \u2013 1.58. I couldn't identify the source analysis or recall its DVMC values, so this is a guess. I picked the largest option because a \"highest value\" question tends to have the widest-spread figure a",
+      "was_correct": true
+    },
+    {
+      "qid": "case-58bab9c5d6",
+      "question": "Which is statistically the most enriched GO process in BOS-patient fibroblasts?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "",
+      "was_correct": false
+    },
+    {
+      "qid": "case-7fcfd8e0b0",
+      "question": "What impact would reducing the GO term similarity cutoff from 0.7 to 0.5 in the simplification step have on the number of significant membrane-related processes?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "The question most likely refers to simplifyEnrichment or clusterProfiler's `simplify()` function, where the cutoff is a semantic similarity threshold. Terms whose similarity exceeds the cutoff are tre",
+      "was_correct": false
+    },
+    {
+      "qid": "case-a1f00f0528",
+      "question": "What similarity cutoff value is used to reduce redundancy in the GO term analysis?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "The question most likely refers to REVIGO, which reduces redundant GO terms using a similarity cutoff. REVIGO offers four settings: large (0.9), medium (0.7), small (0.5), and tiny (0.4). The default ",
+      "was_correct": true
+    },
+    {
+      "qid": "case-194b4a48b0",
+      "question": "Based on the pathway enrichment analysis of T cell evasion genes, at what timepoint does immune pathway regulation show the strongest evidence of selective pressure?",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "C \u2013 Selective pressure accumulates over repeated T cell exposure, so immune-regulation pathways (e.g., IFN-\u03b3 signaling, antigen presentation) should be most enriched at the final chronic round, day 9.",
+      "was_correct": false
+    },
+    {
+      "qid": "case-1d50930496",
+      "question": "What is the adjusted p-value threshold required to identify significant pathway enrichment in the acute T cell exposure analysis?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 0.05 is the conventional adjusted p-value cutoff for pathway enrichment. I can't verify this against the specific paper, so it is an inference from convention.\n\n- **A (0.001):** This is unusually ",
+      "was_correct": true
+    },
+    {
+      "qid": "case-e282744e28",
+      "question": "How many pathways maintain significant enrichment (adjusted p-value < 0.05) across all three rounds of chronic T cell exposure?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 a guess, not a recalled result: two pathways seems most plausible, likely the interferon-gamma and TNF\u03b1/NF-\u03baB programs, which tend to persist under chronic T cell pressure.",
+      "was_correct": false
+    },
+    {
+      "qid": "case-d685c29a74",
+      "question": "What is the Spearman correlation coefficient between replicates for genes identified in chronic round 1 of T cell exposure?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "B \u2013 I can't recall the exact figure from the paper, so this is a guess among near-identical values (0.013\u20130.021). All four options point to very weak replicate correlation, consistent with a strong se",
+      "was_correct": false
+    },
+    {
+      "qid": "case-ba5a2b8848",
+      "question": "What correlation value is observed between replicates in the acute T cell screen?",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "D \u2013 I'm guessing from plausibility rather than recalling the paper. A correlation of 0.198 is weak but still shows some reproducibility, whereas 0.014\u20130.047 would mean essentially none.",
+      "was_correct": false
+    },
+    {
+      "qid": "case-ba4908c752",
+      "question": "What proportion of hypermethylated genes (m6A Hyper) in the dataset show increased expression (Up) in bladder cancer?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "",
+      "was_correct": false
+    },
+    {
+      "qid": "case-24b80a1bba",
+      "question": "What is the ratio of hypermethylated to hypomethylated genes among all differentially methylated genes in the dataset?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 The dataset isn't specified, so this is a guess. Hypermethylated genes often modestly outnumber hypomethylated ones, which fits 1.33 (about 4:3) better than 2.15 or 1.85.",
+      "was_correct": true
+    },
+    {
+      "qid": "case-a3a74288de",
+      "question": "For genes with significant differential methylation, what is the odds ratio of finding upregulated versus downregulated genes in hypermethylated compared to hypomethylated genes?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "B \u2013 74.3 is my best guess, not a recalled result. I cou",
+      "was_correct": true
+    },
+    {
+      "qid": "case-cfc32464c2",
+      "question": "By performing a two-way ANOVA analysis on the gene expression data, what is the statistical strength (F-statistic and p-value) of the interaction between tissue type and treatment response?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I can't identify the specific study, so this is a best guess. The wording \"statistical strength\" suggests a significant interaction, which rules out A and B (both p > 0.05). Between C and D, inter",
+      "was_correct": true
+    },
+    {
+      "qid": "case-7d6f2255e0",
+      "question": "In the dentate gyrus, what is the pattern of overlap in differentially expressed genes between good responders, bad responders, and controls?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 Partial overlap between good and bad responders only is the most plausible pattern. I am inferring this from the answer options and have not matched it to the specific study.\n\n- **A:** Having no s",
+      "was_correct": false
+    },
+    {
+      "qid": "case-d8e07bbd50",
+      "question": "In which tissue type do bad responders show the highest number of significant (p < 0.05) differentially expressed genes compared to controls?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "B \u2013 Brain tissue usually shows the strongest transcriptional changes, so the dentate gyrus likely has the most DEGs in bad responders. This is an inference from general patterns, not something I could",
+      "was_correct": true
+    },
+    {
+      "qid": "case-178c4f6a8a",
+      "question": "What is the effect of BCG vaccination on COVID-19 severity when controlling for patient interaction frequency in healthcare workers?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I'm recalling this from memory rather than a specific verified paper. BCG's proposed trained-imm",
+      "was_correct": false
+    },
+    {
+      "qid": "case-239a8c7950",
+      "question": "What is the relationship between healthcare workers' expected patient interaction and COVID-19 severity?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I'm going from a vague recollection of the study, not a derivation. I recall a counterintuitive finding that more expected patient interaction was linked to somew",
+      "was_correct": true
+    },
+    {
+      "qid": "case-8bbc14ae68",
+      "question": "How does the distribution of COVID-19 severity differ among healthcare workers seeing different numbers of patients?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "I can't point to a specific publication for this, so this is a best guess. The question asks whether COVID-19 severity differs among healthcare workers grouped by number of patients seen.\n\nOption A, s",
+      "was_correct": false
+    },
+    {
+      "qid": "case-c88a2566e6",
+      "question": "What is the effect of BCG re-vaccination on COVID-19 severity odds among healthcare workers who interact with patients?",
+      "tier": "ACT_ON",
+      "trust": 0.8333333333333333,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "C",
+      "was_correct": false
+    },
+    {
+      "qid": "case-14b2daf7fe",
+      "question": "For healthcare workers seeing 1-50 patients, what is the statistical significance (p-value) of the association between vaccination status and disease severity?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 a guess, since I can't identify the study. Among options, p = 0.024 is the only clearly significant one; 0.052 is borderline, and 0.327 and 0.444 are non-significant.",
+      "was_correct": true
+    },
+    {
+      "qid": "case-1f48233220",
+      "question": "What percentage of fungal genes show treeness values above 0.06?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 a best guess: I couldn't recall the specific study, and treeness above 0.06 is a relatively high cutoff,",
+      "was_correct": false
+    },
+    {
+      "qid": "case-46ef8ad17e",
+      "question": "What does the distribution of parsimony informative sites in fungal proteins suggest about their evolutionary rate compared to animal proteins?",
+      "tier": "ACT_ON",
+      "trust": 1.0,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer finds it sound",
+          "vote": 1,
+          "detail": "An independent reviewer found the answer well supported."
+        }
+      ],
+      "answer": "D - Fungal proteins show more parsimony informative sites than animal proteins, which indicates faster evolution.\n\nThis answer rests on a general pattern I recall from phylogenomic studies, not on a s",
+      "was_correct": true
+    },
+    {
+      "qid": "case-b7ee72dfd0",
+      "question": "What is the median percentage of parsimony informative (variable) sites across all single-copy orthologous genes in fungi?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 a recalled guess, not a verified figure; I could not tie the question to a specific paper.\n\n- A (1.2%) looks too low for fungal single-copy orthologs.\n- B (3.5%) is plausible but",
+      "was_correct": false
+    },
+    {
+      "qid": "case-3c569ec0d8",
+      "question": "What is the Mann-Whitney U test value when comparing the percentage of parsimony informative (variable) sites between animals and fungi?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "B \u2013 I can't recall the published value, so this is a guess rather than a derived answer.",
+      "was_correct": false
+    },
+    {
+      "qid": "case-c9e0a43870",
+      "question": "How many genes have a dispersion value below 1e-05 when using DEseq for analysis?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "C \u2013 I can't recall this specific analysis, so 7 is a guess rather than a value I could verify.",
+      "was_correct": true
+    },
+    {
+      "qid": "case-61224b742e",
+      "question": "What mechanism explains the similar distribution of CHIP variant effects between Bloom syndrome patients and controls?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "D \u2013 BLM loss likely changes how often variants arise or are repaired, but not which variant types are selected, so the effect distributions stay similar. This is inferred from the question wording, no",
+      "was_correct": true
+    },
+    {
+      "qid": "case-2b0cf91e46",
+      "question": "What is the absolute difference in somatic (VAF < 0.3) missense variant frequency between Control Parents and BSyn Probands?",
+      "tier": "SET_ASIDE",
+      "trust": 0.33333333333333337,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "A \u2013 The options look built from two group frequencies, 0.333 and 0.105, whose difference is 0.228. This is a guess from the numbers, not a recalled result.\n\n- **A (0.228):** equals 0.333 \u2212",
+      "was_correct": true
+    },
+    {
+      "qid": "case-290cb9a184",
+      "question": "How does excluding intronic variants affect the total number of CHIP variants in the dataset?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "**D** \u2013 Intronic variants are the bulk of calls, so removing them plausibly cuts 57,258 to 11,896. The 4,550 figure likely comes from later filtering. This is inferred from the numbers, not recalled f",
+      "was_correct": false
+    },
+    {
+      "qid": "case-efa6763d62",
+      "question": "What gene has the strongest negative Spearman correlation between its expression and essentiality, in the provided data?",
+      "tier": "SET_ASIDE",
+      "trust": 0.16666666666666669,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "",
+      "was_correct": false
+    },
+    {
+      "qid": "case-641261552a",
+      "question": "What is the skewness characteristic of the gene expression (log2(TPM+1)) distribution across all cell lines in the dataset?",
+      "tier": "SET_ASIDE",
+      "trust": 0.0,
+      "signals": [
+        {
+          "name": "Changed its answer on rerun",
+          "vote": -1,
+          "detail": "Two passes over the same question disagreed."
+        },
+        {
+          "name": "Literature view differs",
+          "vote": -1,
+          "detail": "An agent reasoning from published work picked a different option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "Gene expression in log2(TPM+1) across cell lines (e.g., CCLE) typically has many zero or low values, which produce a large peak near 0, and a long tail extending toward high expression. This is right-",
+      "was_correct": false
+    },
+    {
+      "qid": "case-c757287dd8",
+      "question": "How many genes in the provided data show strong positive correlation with a Spearman coefficient >= 0.6?",
+      "tier": "CHECK",
+      "trust": 0.6666666666666666,
+      "signals": [
+        {
+          "name": "Answered the same way twice",
+          "vote": 1,
+          "detail": "Two passes over the question agreed."
+        },
+        {
+          "name": "Literature view agrees",
+          "vote": 1,
+          "detail": "An agent reasoning only from published work picked the same option."
+        },
+        {
+          "name": "Reviewer calls it shaky",
+          "vote": -1,
+          "detail": "An independent reviewer judged the answer poorly supported."
+        }
+      ],
+      "answer": "I can't see the provided data or the published analysis, so I can't verify the count of genes. Any answer would be a guess.\n\nIf I have to pick, a question like this usually has a small, specific answe",
+      "was_correct": false
+    }
+  ]
+}

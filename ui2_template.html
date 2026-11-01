@@ -1,0 +1,337 @@
+<title>Trust Router</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a console. Run switch and verdict up top, then one of three views. */
+:root{
+  --bg:#f7f8fa; --panel:#fff; --sunk:#eef1f5; --line:#dde2ea;
+  --fg:#141921; --muted:#5b6676; --faint:#8b95a4;
+  --accent:#0b6e8a; --accent-soft:#d5ecf3;
+  --good:#1a7a49; --good-soft:#dff0e6;
+  --warn:#946008; --warn-soft:#fbeed6;
+  --stop:#a02f2f; --stop-soft:#f9e4e4;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1016; --panel:#141a23; --sunk:#1b222d; --line:#28313e;
+  --fg:#e9eef5; --muted:#99a4b4; --faint:#6d7888;
+  --accent:#4ab8d8; --accent-soft:#11313d;
+  --good:#5bca8c; --good-soft:#123024;
+  --warn:#e2ab52; --warn-soft:#332611;
+  --stop:#e37d7d; --stop-soft:#331818;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c1016; --panel:#141a23; --sunk:#1b222d; --line:#28313e;
+  --fg:#e9eef5; --muted:#99a4b4; --faint:#6d7888;
+  --accent:#4ab8d8; --accent-soft:#11313d;
+  --good:#5bca8c; --good-soft:#123024;
+  --warn:#e2ab52; --warn-soft:#332611;
+  --stop:#e37d7d; --stop-soft:#331818;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:26px 64px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:1.55rem;font-weight:700;margin:0;letter-spacing:-.015em;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;max-width:64ch;font-size:.92rem}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Run switch */
+.runs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:620px){.runs{grid-template-columns:1fr}}
+.run{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:11px;
+  padding:13px 15px;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s}
+.run:hover{border-color:var(--accent)}
+.run[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.run .rn{font-weight:600;font-size:.93rem}
+.run .rd{color:var(--muted);font-size:.8rem;margin-top:2px}
+.run .rx{font-family:var(--mono);font-size:1.35rem;font-weight:600;margin-top:7px}
+.run.win .rx{color:var(--good)} .run.lose .rx{color:var(--stop)}
+
+/* Verdict */
+.verdict{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:11px;overflow:hidden}
+@media(max-width:620px){.verdict{grid-template-columns:repeat(2,1fr)}}
+.v{background:var(--panel);padding:14px 16px}
+.v .k{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.v .n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.65rem;font-weight:600;line-height:1.2;margin-top:5px}
+.v.hi .n{color:var(--accent)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:18px}
+.panel h2{font-size:1rem;font-weight:600;margin:0 0 4px}
+.panel .note{color:var(--muted);font-size:.86rem;margin:0 0 14px;max-width:64ch}
+
+/* View tabs */
+.tabs{display:flex;gap:6px;background:var(--sunk);padding:4px;border-radius:9px;width:fit-content;margin-bottom:16px}
+.tabs button{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:7px 15px;border-radius:6px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--panel);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.tabs button:focus-visible,.run:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.legend{display:flex;flex-wrap:wrap;gap:7px 18px;font-size:.78rem;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:baseline}
+.legend .hollow{background:transparent;border:1.5px solid var(--muted)}
+
+/* Flow bars */
+.flow{display:flex;flex-direction:column;gap:11px}
+.fr{display:grid;grid-template-columns:minmax(130px,1.5fr) 3fr auto;gap:12px;align-items:center;font-size:.85rem}
+@media(max-width:620px){.fr{grid-template-columns:1fr;gap:4px}}
+.fbar{display:flex;height:22px;border-radius:5px;overflow:hidden;background:var(--sunk)}
+.fbar i{display:block;height:100%}
+.fr .fn{color:var(--muted)}
+.fr .fv{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.82rem;white-space:nowrap}
+
+/* List */
+.filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+.filters button{font-family:var(--mono);font-size:.71rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.filters button[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+details.row{border:1px solid var(--line);border-radius:9px;background:var(--panel);margin-bottom:7px}
+details.row summary{list-style:none;cursor:pointer;padding:11px 14px;display:grid;
+  grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+details.row summary::-webkit-details-marker{display:none}
+.q{font-size:.87rem;min-width:0;overflow-wrap:anywhere}
+.t{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.79rem;color:var(--muted);white-space:nowrap}
+.body{padding:0 14px 13px;border-top:1px solid var(--line)}
+.sig{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.sig:last-of-type{border-bottom:0}
+.mark{font-family:var(--mono);font-weight:600;width:1.3em;flex:none}
+.up{color:var(--good)} .down{color:var(--stop)} .flat{color:var(--faint)}
+.sig strong{font-weight:600;display:block}
+.sig em{font-style:normal;color:var(--muted)}
+.truth{margin-top:11px;padding:9px 12px;border-radius:6px;background:var(--sunk);font-size:.83rem;color:var(--muted)}
+.truth b{color:var(--fg)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.65rem;
+  letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;font-weight:500}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.ACT_ON{color:var(--good);background:var(--good-soft)}
+.CHECK{color:var(--warn);background:var(--warn-soft)}
+.SET_ASIDE{color:var(--stop);background:var(--stop-soft)}
+.finding{border-left:3px solid var(--accent);padding:12px 15px;background:var(--sunk);border-radius:0 8px 8px 0;font-size:.89rem}
+footer{color:var(--faint);font-size:.78rem;max-width:64ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Trust router</p>
+    <h1>Which of an AI scientist's answers are worth acting on?</h1>
+    <p class="sub">Agents are right roughly a third of the time and sound equally sure
+      either way. This sorts their answers using signals about how each one was produced,
+      never the answer itself. The real results are opened only to score the sorting.</p>
+  </header>
+
+  <div class="runs" id="runs"></div>
+  <section class="verdict" id="verdict"></section>
+
+  <section class="panel">
+    <div class="tabs" id="tabs">
+      <button data-v="map" aria-pressed="true">Cluster map</button>
+      <button data-v="flow" aria-pressed="false">Signals</button>
+      <button data-v="list" aria-pressed="false">Answers</button>
+    </div>
+    <div id="view"></div>
+  </section>
+
+  <div class="finding" id="finding"></div>
+  <footer id="foot"></footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = id => document.getElementById(id);
+const LABEL = {ACT_ON:'Act on it', CHECK:'Check first', SET_ASIDE:'Set aside'};
+const TONE = {ACT_ON:'var(--good)', CHECK:'var(--warn)', SET_ASIDE:'var(--stop)'};
+const pct = x => (x*100).toFixed(1) + '%';
+const pct0 = x => Math.round(x*100) + '%';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let run = 'bixbench', view = 'map', filter = 'all';
+const cur = () => D[run];
+
+// --- run switch -------------------------------------------------------------
+$('runs').innerHTML = [
+  ['bixbench','Mixed model families','GPT-4o and Claude, judged separately','win'],
+  ['live','One model, three roles','Claude Sonnet as analyst, twice, plus librarian','lose'],
+].map(([k,n,d,cls]) => `
+  <button class="run ${cls}" data-r="${k}" aria-pressed="${k===run}">
+    <div class="rn">${n}</div><div class="rd">${d}</div>
+    <div class="rx">${D[k].lift.toFixed(1)}× &nbsp;<span style="font-size:.8rem;color:var(--muted)">${D[k].rows.length} answers</span></div>
+  </button>`).join('');
+$('runs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  run = b.dataset.r;
+  [...$('runs').children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  draw();
+});
+$('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  view = b.dataset.v;
+  [...$('tabs').children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  draw();
+});
+
+// --- cluster map ------------------------------------------------------------
+// Answers that fired exactly the same signals are one cluster. Placing each
+// cluster by how accurate it turned out shows which reasoning patterns hold up.
+function clusters(){
+  const by = new Map();
+  for (const r of cur().rows) {
+    const key = r.signals.map(s => (s.vote>0?'+':s.vote<0?'-':'0') + s.name).sort().join('|');
+    if (!by.has(key)) by.set(key, {key, rows:[], tier:r.tier, signals:r.signals});
+    by.get(key).rows.push(r);
+  }
+  return [...by.values()].map(c => ({
+    ...c, n: c.rows.length,
+    acc: c.rows.filter(r => r.was_correct).length / c.rows.length,
+    trust: c.rows.reduce((a,r) => a + r.trust, 0) / c.rows.length,
+  })).filter(c => c.n >= 2).sort((a,b) => b.acc - a.acc);
+}
+
+function mapView(){
+  const cs = clusters(), base = cur().overall_accuracy;
+  if (!cs.length) return '<p class="note">Not enough repeated patterns to cluster.</p>';
+  const W=680, L=58, R=20, T=22, rowH=52, H = T + cs.length*rowH + 34;
+  const x = a => L + a*(W-L-R);
+  const rad = n => Math.max(7, Math.min(21, 6 + Math.sqrt(n)*3.1));
+
+  const grid = [0,.25,.5,.75,1].map(v => `
+    <line x1="${x(v)}" x2="${x(v)}" y1="${T-6}" y2="${H-30}" stroke="var(--line)"/>
+    <text x="${x(v)}" y="${H-14}" text-anchor="middle" font-size="10.5"
+      font-family="var(--mono)" fill="var(--faint)">${Math.round(v*100)}%</text>`).join('');
+
+  const baseline = `
+    <line x1="${x(base)}" x2="${x(base)}" y1="${T-6}" y2="${H-30}"
+      stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="${x(base)}" y="${T-10}" text-anchor="middle" font-size="10.5"
+      font-family="var(--mono)" fill="var(--accent)">agent alone ${pct0(base)}</text>`;
+
+  const bubbles = cs.map((c,i) => {
+    const cy = T + 16 + i*rowH, r = rad(c.n), col = TONE[c.tier];
+    const short = c.signals.filter(s => s.vote !== 0)
+      .map(s => s.name.replace(/^The two models /,'').replace(/^Others find this question /,''))
+      .slice(0,2).join(' · ') || 'no strong signal';
+    return `<g>
+      <line x1="${L}" x2="${x(c.acc)-r-3}" y1="${cy}" y2="${cy}" stroke="var(--line)"/>
+      <circle cx="${x(c.acc)}" cy="${cy}" r="${r}" fill="${col}" fill-opacity="0.22"
+        stroke="${col}" stroke-width="1.75"/>
+      <text x="${x(c.acc)}" y="${cy+4}" text-anchor="middle" font-size="11"
+        font-family="var(--mono)" font-weight="600" fill="var(--fg)">${c.n}</text>
+      <text x="${L-8}" y="${cy-3}" text-anchor="end" font-size="10.5"
+        font-family="var(--mono)" fill="var(--fg)">${pct0(c.acc)}</text>
+      <text x="${L-8}" y="${cy+9}" text-anchor="end" font-size="9.5"
+        font-family="var(--mono)" fill="var(--faint)">${LABEL[c.tier].toLowerCase()}</text>
+      <text x="${x(c.acc)+r+9}" y="${cy+4}" font-size="11.5" fill="var(--muted)">${esc(short)}</text>
+    </g>`;
+  }).join('');
+
+  return `<h2>How each reasoning pattern turned out</h2>
+    <p class="note">Every answer that fired the same combination of signals forms one
+      cluster. The circle sits at that cluster's real accuracy and its number is how many
+      answers it holds. Clusters right of the dashed line beat the agent working alone.</p>
+    <svg viewBox="0 0 ${W} ${H}" role="img" style="width:100%;height:auto"
+      aria-label="Clusters of answers placed by how accurate each reasoning pattern was">
+      ${grid}${baseline}${bubbles}</svg>
+    <div class="legend">
+      <span><i style="background:var(--good)"></i>act on it</span>
+      <span><i style="background:var(--warn)"></i>check first</span>
+      <span><i style="background:var(--stop)"></i>set aside</span>
+      <span>circle size = answers in the cluster</span>
+    </div>`;
+}
+
+// --- signals ----------------------------------------------------------------
+function flowView(){
+  const rows = cur().rows, base = cur().overall_accuracy;
+  const by = new Map();
+  for (const r of rows) for (const s of r.signals) {
+    if (!by.has(s.name)) by.set(s.name, {name:s.name, vote:s.vote, rows:[]});
+    by.get(s.name).rows.push(r);
+  }
+  const list = [...by.values()].map(s => ({
+    ...s, n: s.rows.length,
+    acc: s.rows.filter(r => r.was_correct).length / s.rows.length,
+    tiers: ['ACT_ON','CHECK','SET_ASIDE'].map(t => s.rows.filter(r => r.tier===t).length),
+  })).sort((a,b) => b.acc - a.acc);
+
+  return `<h2>What each signal is worth on its own</h2>
+    <p class="note">For every signal: how accurate the answers that fired it turned out to be,
+      and which tiers they landed in. A signal worth having sits well away from
+      ${pct0(base)}, the rate with no sorting at all.</p>
+    <div class="flow">${list.map(s => `
+      <div class="fr">
+        <span class="fn">${s.vote>0?'+':s.vote<0?'−':'·'} ${esc(s.name)}</span>
+        <span class="fbar">${s.tiers.map((n,i) =>
+          n ? `<i style="width:${n/s.n*100}%;background:${TONE[['ACT_ON','CHECK','SET_ASIDE'][i]]}"></i>` : ''
+        ).join('')}</span>
+        <span class="fv" style="color:${s.acc>base+.05?'var(--good)':s.acc<base-.05?'var(--stop)':'var(--muted)'}">
+          ${pct(s.acc)} &nbsp;<span style="color:var(--faint)">n=${s.n}</span></span>
+      </div>`).join('')}</div>
+    <div class="legend">
+      <span><i style="background:var(--good)"></i>act on it</span>
+      <span><i style="background:var(--warn)"></i>check first</span>
+      <span><i style="background:var(--stop)"></i>set aside</span>
+    </div>`;
+}
+
+// --- answers ----------------------------------------------------------------
+function listView(){
+  const rows = [...cur().rows].sort((a,b) => b.trust - a.trust)
+    .filter(r => filter === 'all' || r.tier === filter).slice(0,100);
+  return `<h2>Every answer, most trusted first</h2>
+    <p class="note">Open one to see which signals fired and what the answer turned out to be.</p>
+    <div class="filters" id="filters">
+      ${['all','ACT_ON','CHECK','SET_ASIDE'].map(f =>
+        `<button data-f="${f}" aria-pressed="${f===filter}">${f==='all'?'All':LABEL[f]}</button>`).join('')}
+    </div>
+    ${rows.map(r => `<details class="row">
+      <summary><span class="pill ${r.tier}">${LABEL[r.tier]}</span>
+        <span class="q">${esc(r.question)}</span><span class="t">${r.trust.toFixed(2)}</span></summary>
+      <div class="body">${r.signals.map(s => `<div class="sig">
+          <span class="mark ${s.vote>0?'up':s.vote<0?'down':'flat'}">${s.vote>0?'+':s.vote<0?'−':'·'}</span>
+          <span><strong>${esc(s.name)}</strong><em>${esc(s.detail)}</em></span></div>`).join('')}
+        <div class="truth">Opened only for scoring — the answer was
+          <b>${r.was_correct?'correct':'wrong'}</b>.</div></div>
+    </details>`).join('') || '<p class="note">Nothing in this tier.</p>'}`;
+}
+
+// --- draw -------------------------------------------------------------------
+function draw(){
+  const d = cur(), top = d.tiers.ACT_ON;
+  $('verdict').innerHTML = `
+    <div class="v"><div class="k">Agent alone</div><div class="n">${pct(d.overall_accuracy)}</div></div>
+    <div class="v hi"><div class="k">Top tier</div><div class="n">${pct(top.accuracy)}</div></div>
+    <div class="v"><div class="k">Covering</div><div class="n">${pct0(top.coverage)}</div></div>
+    <div class="v"><div class="k">By chance</div><div class="n">${d.p_value < .001 ? '&lt;0.1%' : pct(d.p_value)}</div></div>`;
+
+  $('view').innerHTML = view==='map' ? mapView() : view==='flow' ? flowView() : listView();
+  if (view === 'list') $('filters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    filter = b.dataset.f; draw();
+  });
+
+  $('finding').innerHTML = run === 'bixbench'
+    ? `<b>The sorting works here.</b> The agreement signal came from two different model
+       families, GPT-4o and Claude, so when they agreed it meant something. The top tier is
+       ${d.lift.toFixed(1)}× the rate of the agent working alone, and random sorting never
+       matched it in 2,000 tries.`
+    : `<b>The sorting fails here, and that is the finding.</b> All three answering agents
+       were Claude Sonnet, so they made the same mistakes and agreement carried no
+       information. "Check first" came out more accurate than "act on it", and random
+       sorting matched this result ${pct0(d.p_value)} of the time. Independence between
+       agents matters more than how many you have.`;
+
+  $('foot').textContent = `${d.benchmark}. The top tier holds ${top.n} answers, `
+    + `so its true accuracy is roughly ${pct0(Math.max(0,top.accuracy-0.19))} to `
+    + `${pct0(Math.min(1,top.accuracy+0.19))}. Signals: whether each model stood behind its `
+    + `answer when offered "I don't know", whether independently-run models agreed, and how `
+    + `often other runs answered the same question correctly.`;
+}
+draw();
+</script>

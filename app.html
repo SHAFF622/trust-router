@@ -1,87 +1,179 @@
 <!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ask the panel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-:root{--bg:#0d1117;--panel:#161b23;--raised:#1d242e;--line:#283140;--fg:#e8edf4;
---muted:#94a0b0;--accent:#56b6d8;--add:#9b8cf0;--good:#5cc98c;--warn:#e3a94b;--stop:#e07a7a;
---mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+:root{
+  --bg:#EEF1F6; --surface:#FFFFFF; --raised:#F7F8FB; --ink:#111B30; --muted:#5B6678; --line:#DCE2EB;
+  --accent:#2C47D6; --accent-ink:#FFFFFF; --accent-soft:#E7EBFD;
+  --go:#14804C; --go-soft:#DDF2E6; --warn:#946200; --warn-soft:#FCF1CF;
+  --stop:#C5332A; --stop-soft:#FBE2DF; --idle:#A0AABA;
+  --shadow:0 1px 2px rgba(17,27,48,.06),0 8px 24px rgba(17,27,48,.06);
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0B111C; --surface:#141C2B; --raised:#1A2335; --ink:#E9EDF5; --muted:#9AA5B7; --line:#273146;
+  --accent:#8EA0FF; --accent-ink:#0B111C; --accent-soft:#1D2646;
+  --go:#4CC48B; --go-soft:#10291D; --warn:#F0C43C; --warn-soft:#2C240F;
+  --stop:#F26A60; --stop-soft:#311715; --idle:#5C677A; --shadow:none; color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;padding:26px 18px 60px;background:var(--bg);color:var(--fg);
-font:14px/1.55 system-ui,-apple-system,sans-serif}
-.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-h1{font-size:1.35rem;margin:0}
-.sub{color:var(--muted);margin:4px 0 0;font-size:.86rem;max-width:62ch}
-h2{font-size:.92rem;margin:0 0 10px}
-section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-textarea{width:100%;min-height:76px;background:var(--raised);color:var(--fg);
-border:1px solid var(--line);border-radius:8px;padding:11px 12px;font:inherit;resize:vertical}
-textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
-button{background:var(--accent);color:#06222c;border:0;border-radius:8px;
-padding:9px 18px;font-weight:600;font-size:.9rem;cursor:pointer}
+body{margin:0;padding:26px 18px 60px;background:var(--bg);color:var(--ink);
+font:15px/1.55 var(--body)}
+.wrap{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+@media(max-width:1020px){.wrap{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+h1{font-family:var(--display);font-size:1.6rem;font-weight:700;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:5px 0 0;font-size:.9rem;max-width:62ch}
+h2{font-family:var(--display);font-size:1.02rem;font-weight:700;margin:0 0 9px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+padding:16px 18px;box-shadow:var(--shadow)}
+.label{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+textarea{width:100%;min-height:78px;background:var(--raised);color:var(--ink);
+border:1px solid var(--line);border-radius:10px;padding:11px 13px;font:inherit;resize:vertical}
+textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:11px;align-items:center;margin-top:11px}
+button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
+padding:10px 20px;font-family:var(--display);font-weight:700;font-size:.93rem;cursor:pointer}
 button:disabled{opacity:.5;cursor:default}
-label{color:var(--muted);font-size:.83rem}
-input[type=number]{width:72px;background:var(--raised);color:var(--fg);
-border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--mono)}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+label{color:var(--muted);font-size:.85rem}
+input[type=number]{width:72px;background:var(--raised);color:var(--ink);
+border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-family:var(--mono)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
 .chip{background:var(--raised);border:1px solid var(--line);color:var(--muted);
-border-radius:999px;padding:5px 11px;font-size:.79rem;cursor:pointer}
-.chip:hover{border-color:var(--accent);color:var(--fg)}
-.stat{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.83rem;margin-top:10px}
-.stat b{color:var(--fg);font-family:var(--mono)}
-.steps{font-family:var(--mono);font-size:.78rem;max-height:180px;overflow:auto;
-background:var(--raised);border-radius:8px;padding:10px 12px}
+border-radius:999px;padding:6px 13px;font-size:.81rem;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.stat{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.84rem;margin-top:10px}
+.stat b{color:var(--ink);font-family:var(--mono)}
+.steps{font-family:var(--mono);font-size:.78rem;max-height:170px;overflow:auto;
+background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .steps div{color:var(--muted);padding:1px 0}
-.steps div.done{color:var(--good)}
-.claim{border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:9px;background:var(--raised)}
-.claim.ACT_ON{border-left:3px solid var(--good)}
+.steps div.done{color:var(--go)}
+.err{color:var(--stop);font-size:.85rem;margin:9px 0 0}
+
+/* Literature panel, same shape as Quorum's */
+.lit{position:sticky;top:18px;max-height:calc(100vh - 36px);overflow:auto}
+.lit .desc{color:var(--muted);font-size:.84rem;margin:6px 0 12px}
+.lit .counts{font-size:.83rem;color:var(--muted);margin-bottom:4px}
+.lit .ranked{font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:12px}
+.shelf{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+color:var(--muted);display:flex;justify-content:space-between;margin:14px 0 7px}
+.paper{border:1px solid var(--line);border-radius:12px;background:var(--raised);
+padding:10px 12px;display:grid;gap:5px;margin-bottom:9px}
+.paper .relrow{display:flex;align-items:center;gap:8px}
+.paper .rel{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.paper .rel i{display:block;height:100%;background:var(--accent)}
+.paper .pct{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.paper .t{font-weight:700;font-size:14px;line-height:1.3}
+.paper a.t{color:inherit;text-decoration:none}
+.paper a.t:hover{color:var(--accent)}
+.paper .meta{font-size:12px;color:var(--muted)}
+.paper .meta .pm{font-family:var(--mono)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--muted);
+background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:2px 9px;width:fit-content}
+.tag.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.paper .psg{font-size:12px;color:var(--muted);border-left:2px solid var(--line);padding-left:8px}
+
+/* Reasoning map */
+.tabs{display:flex;gap:5px;background:var(--raised);border:1px solid var(--line);
+padding:4px;border-radius:10px;width:fit-content;margin-bottom:14px}
+.tabs button{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+padding:6px 14px;border-radius:7px;border:0;background:transparent;color:var(--muted);font-weight:500}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.map{overflow-x:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.78rem;color:var(--muted);margin-top:10px}
+.claim{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;background:var(--raised)}
+.claim.ACT_ON{border-left:3px solid var(--go)}
 .claim.CHECK{border-left:3px solid var(--warn)}
 .claim.SET_ASIDE{border-left:3px solid var(--stop)}
 .ch{display:flex;justify-content:space-between;gap:12px;align-items:start}
-.pill{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;
-padding:2px 8px;border-radius:999px;white-space:nowrap;flex:none}
-.p-ACT_ON{color:var(--good);background:#14301f}
-.p-CHECK{color:var(--warn);background:#33270f}
-.p-SET_ASIDE{color:var(--stop);background:#331818}
-.v{display:flex;gap:9px;font-size:.81rem;padding:5px 0;border-top:1px solid var(--line);margin-top:8px}
+.pill{font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;text-transform:uppercase;
+padding:3px 9px;border-radius:999px;white-space:nowrap;flex:none;font-weight:500}
+.p-ACT_ON{color:var(--go);background:var(--go-soft)}
+.p-CHECK{color:var(--warn);background:var(--warn-soft)}
+.p-SET_ASIDE{color:var(--stop);background:var(--stop-soft)}
+.v{display:flex;gap:9px;font-size:.82rem;padding:6px 0;border-top:1px solid var(--line);margin-top:8px}
 .v:first-of-type{margin-top:10px}
-.m{font-family:var(--mono);font-weight:600;flex:none;width:1.2em}
-.up{color:var(--good)} .down{color:var(--stop)} .flat{color:var(--muted)}
+.m{font-family:var(--mono);font-weight:700;flex:none;width:1.2em}
+.up{color:var(--go)} .down{color:var(--stop)} .flat{color:var(--muted)}
 .v span.d{color:var(--muted)}
-.papers li{color:var(--muted);font-size:.82rem;margin-bottom:4px}
-.papers a{color:var(--accent)}
-.err{color:var(--stop);font-size:.85rem}
-footer{color:var(--muted);font-size:.77rem}
-</style></head><body><div class="wrap">
+.stepbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.step{background:var(--raised);border:1px solid var(--line);color:var(--muted);
+border-radius:999px;padding:6px 14px;font-size:.79rem;font-family:var(--body);font-weight:400}
+.step[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.navbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.godeep{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);
+border-radius:10px;padding:8px 16px;font-size:.84rem}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);margin-bottom:8px}
+.crumb{background:none;border:0;color:var(--accent);font:inherit;font-weight:700;
+padding:0;cursor:pointer;text-decoration:underline}
+#gwrap{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:8px}
+.key{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.krow{display:flex;flex-wrap:wrap;align-items:center;gap:7px 16px;font-size:.8rem;color:var(--muted)}
+.krow b{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;
+color:var(--muted);min-width:56px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.arr{display:inline-block;width:18px;height:2.5px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.inspector{margin-top:16px;background:var(--raised);border:1px solid var(--line);
+border-radius:12px;padding:14px 16px}
+.ihead{display:flex;justify-content:space-between;align-items:center;gap:12px;
+padding-bottom:10px;border-bottom:1px solid var(--line);font-family:var(--display);font-size:1rem}
+.wrow{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:9px 0;
+border-bottom:1px solid var(--line);font-size:.86rem}
+.wrow:last-child{border-bottom:0}
+.wk{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--accent);padding-top:3px}
+.wrow .d{color:var(--muted)}
+footer{color:var(--muted);font-size:.78rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="wrap">
+<div class="col">
+  <header>
+    <p class="label">Trust router</p>
+    <h1>Ask the panel</h1>
+    <p class="sub">An analyst proposes findings, a librarian checks them against published
+      papers, and a reviewer judges whether the evidence holds. Plain code decides what you
+      can act on. No model assigns a verdict.</p>
+  </header>
 
-<header><h1>Ask the panel</h1>
-<p class="sub">An analyst proposes findings, a librarian checks them against published
-papers, and a reviewer judges whether the evidence holds. Plain code decides what you
-can act on. No model assigns a verdict.</p></header>
+  <section>
+    <p class="label">Your research question</p>
+    <textarea id="q" placeholder="e.g. Does higher ESR1 expression predict better survival in ER-positive breast cancer?"></textarea>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <button id="go">Run the panel</button>
+      <label>Budget $<input type="number" id="budget" value="2" min="0.5" max="20" step="0.5"></label>
+      <span class="sub" id="status" style="margin:0">Idle.</span>
+    </div>
+    <div class="stat"><span>Calls <b id="calls">0</b></span><span>Spent $<b id="spend">0.00</b></span></div>
+    <p class="err" id="err"></p>
+  </section>
 
-<section>
-  <h2>Your question</h2>
-  <textarea id="q" placeholder="e.g. Does higher ESR1 expression predict better survival in ER-positive breast cancer?"></textarea>
-  <div class="chips" id="chips"></div>
-  <div class="row">
-    <button id="go">Run the panel</button>
-    <label>Budget $<input type="number" id="budget" value="2" min="0.5" max="20" step="0.5"></label>
-    <span class="sub" id="status">Idle.</span>
-  </div>
-  <div class="stat"><span>Calls <b id="calls">0</b></span><span>Spent $<b id="spend">0.00</b></span></div>
-  <p class="err" id="err"></p>
+  <section><h2>What the agents are doing</h2>
+    <div class="steps" id="steps"><div>Nothing running.</div></div></section>
+
+  <section>
+    <div class="tabs" id="tabs">
+      <button data-v="graph" aria-pressed="true">Graph</button>
+      <button data-v="map" aria-pressed="false">Flow</button>
+      <button data-v="list" aria-pressed="false">Findings</button>
+    </div>
+    <div id="view"><p class="sub">Ask a question to begin.</p></div>
+  </section>
+
+  <footer>Runs locally. Every finding shows the signals behind its verdict.</footer>
+</div>
+
+<section class="lit">
+  <p class="label">Literature agent</p>
+  <h2 style="margin:4px 0 0">What published papers say</h2>
+  <p class="desc">Reads the Pan-Cancer Atlas papers first, then searches 40 million
+    abstracts on Europe PMC. Every passage is ranked against the question, and the
+    librarian judges each finding against what it found.</p>
+  <div id="litbody"><p class="sub">Papers appear once a run starts.</p></div>
 </section>
-
-<section><h2>What the agents are doing</h2>
-  <div class="steps" id="steps"><div>Nothing running.</div></div></section>
-
-<section><h2>Findings, sorted by what you can act on</h2>
-  <div id="claims"><p class="sub">Ask a question to begin.</p></div></section>
-
-<section><h2>Papers the librarian read</h2>
-  <ul class="papers" id="papers"><li>None yet.</li></ul></section>
-
-<footer>Runs locally. Each finding shows every signal behind its verdict.</footer>
 </div>
 
 <script>
@@ -93,11 +185,592 @@ const EXAMPLES = [
 ];
 const $ = id => document.getElementById(id);
 const LABEL = {ACT_ON:"Act on it", CHECK:"Check first", SET_ASIDE:"Set aside"};
+const TONE = {ACT_ON:"var(--go)", CHECK:"var(--warn)", SET_ASIDE:"var(--stop)"};
+const SOFT = {ACT_ON:"#14301f", CHECK:"#33270f", SET_ASIDE:"#331818"};
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 $("chips").innerHTML = EXAMPLES.map(e =>
   `<span class="chip">${esc(e.length > 58 ? e.slice(0,56)+"…" : e)}</span>`).join("");
 [...$("chips").children].forEach((c,i) => c.onclick = () => { $("q").value = EXAMPLES[i]; });
+
+let view = "graph", LAST = null, PICKED = null, LEVEL = 0, PICK_F = null;
+$("tabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  view = b.dataset.v;
+  [...$("tabs").children].forEach(x => x.setAttribute("aria-pressed", String(x===b)));
+  if (LAST) render();
+});
+
+// The map is drawn, not tabulated: the question on the left, work branching out
+// to each finding, the checks converging again, and a verdict at the end. Edges
+// carry colour so you can follow which evidence pushed a finding up or down.
+const trunc = (s, n) => { s = String(s || ""); return s.length > n ? s.slice(0, n-1) + "…" : s; };
+const CHECKS = [["lit","Literature"],["critic","Reviewer"],["testable","Measurable?"]];
+
+function mapView(s){
+  const t = s.trace || {shared: [], lanes: []};
+  if (!t.shared.length && !t.lanes.length)
+    return '<p class="sub">Ask a question to begin.</p>';
+
+  const lanes = t.lanes.length ? t.lanes : [];
+  const W = 1120, BAND = 108, TOP = 108;
+  const H = Math.max(240, TOP + Math.max(lanes.length, 1) * BAND + 20);
+  const X = {q:16, gather:168, find:338, chk:566, route:736, tier:884};
+  const WD = {q:120, gather:150, find:200, chk:150, route:120, tier:220};
+
+  const col = n => n == null ? "var(--line)"
+    : n > 0 ? "var(--go)" : n < 0 ? "var(--stop)" : "var(--muted)";
+  const dim = st => st === "pending" ? 0.3 : 1;
+
+  // A rounded box with its agent above and a line of detail below.
+  function box(x, y, w, h, o){
+    const stroke = o.accent || (o.state === "running" ? "var(--accent)" : "var(--line)");
+    const sw = o.state === "running" || o.accent ? 1.8 : 1;
+    return `<g opacity="${dim(o.state)}">
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+        fill="${o.fill || 'var(--raised)'}" stroke="${stroke}" stroke-width="${sw}"/>
+      ${o.agent ? `<text x="${x+11}" y="${y+16}" font-size="8.5" font-family="var(--mono)"
+        letter-spacing="0.6" fill="var(--muted)">${esc(trunc(o.agent.toUpperCase(), 22))}</text>` : ""}
+      <text x="${x+11}" y="${y + (o.agent ? 32 : 22)}" font-size="11.5" font-weight="600"
+        fill="var(--ink)">${esc(trunc(o.label, Math.floor(w/6.6)))}</text>
+      ${o.detail ? `<text x="${x+11}" y="${y + (o.agent ? 47 : 38)}" font-size="10"
+        fill="var(--muted)">${esc(trunc(o.detail, Math.floor(w/5.6)))}</text>` : ""}
+    </g>`;
+  }
+  // A curve from the right edge of one box to the left edge of the next.
+  const edge = (x1,y1,x2,y2,c,on=true) =>
+    `<path d="M${x1} ${y1} C${(x1+x2)/2} ${y1}, ${(x1+x2)/2} ${y2}, ${x2} ${y2}"
+      fill="none" stroke="${c}" stroke-width="${on?1.6:1}" opacity="${on?0.85:0.3}"/>`;
+
+  const byKey = Object.fromEntries(t.shared.map(n => [n.key, n]));
+  const papers = byKey.papers, propose = byKey.propose;
+  const qy = TOP/2, gy1 = 34, gy2 = 92;
+
+  let svg = "";
+  // Question, then the two shared steps that run once.
+  svg += box(X.q, qy-22, WD.q, 44, {label:"Your question", detail:trunc(s.question, 22),
+    accent:"var(--accent)", fill:"var(--accent-soft)", state:"done"});
+  svg += edge(X.q+WD.q, qy, X.gather, gy1+26, "var(--line)");
+  svg += edge(X.q+WD.q, qy, X.gather, gy2+26, "var(--line)");
+  svg += box(X.gather, gy1, WD.gather, 52, papers
+    ? {agent:papers.agent, label:papers.label, detail:papers.detail, state:papers.state}
+    : {label:"Papers", state:"pending"});
+  svg += box(X.gather, gy2, WD.gather, 52, propose
+    ? {agent:propose.agent, label:propose.label, detail:propose.detail, state:propose.state}
+    : {label:"Findings", state:"pending"});
+
+  // One branch per finding: the claim, three checks, the router, the verdict.
+  lanes.forEach((ln, i) => {
+    const cy = TOP + i*BAND + BAND/2;
+    const by = Object.fromEntries((ln.steps||[]).map(x => [x.key, x]));
+    svg += edge(X.gather+WD.gather, gy2+26, X.find, cy, "var(--line)");
+    svg += box(X.find, cy-30, WD.find, 60,
+      {agent:"Finding "+(i+1), label:trunc(ln.claim||"…", 26),
+       detail:trunc((ln.claim||"").slice(26), 30), state: ln.claim ? "done" : "pending"});
+
+    CHECKS.forEach(([k, name], j) => {
+      const n = by[k], y = cy - 36 + j*26;
+      svg += edge(X.find+WD.find, cy, X.chk, y+11, col(n && n.vote), !!n);
+      svg += `<g opacity="${dim(n ? n.state : 'pending')}">
+        <rect x="${X.chk}" y="${y}" width="${WD.chk}" height="22" rx="7"
+          fill="var(--raised)" stroke="${n && n.state==='running' ? 'var(--accent)' : col(n && n.vote)}"
+          stroke-width="${n && n.vote != null ? 1.6 : 1}"/>
+        <text x="${X.chk+9}" y="${y+15}" font-size="10" fill="var(--ink)">
+          ${n && n.vote != null ? (n.vote>0?"+":n.vote<0?"−":"·") + " " : ""}${esc(name)}</text>
+        ${n && n.vote != null ? `<text x="${X.chk+WD.chk-9}" y="${y+15}" font-size="9"
+          text-anchor="end" font-family="var(--mono)" fill="${col(n.vote)}">${
+            n.vote>0?"supports":n.vote<0?"doubt":"neutral"}</text>` : ""}
+      </g>`;
+      svg += edge(X.chk+WD.chk, y+11, X.route, cy, col(n && n.vote), !!n);
+    });
+
+    const rt = by.route;
+    svg += box(X.route, cy-20, WD.route, 40, rt
+      ? {label:"Jev router", detail:rt.detail, state:"done", accent:"var(--accent)"}
+      : {label:"Jev router", state:"pending"});
+    svg += edge(X.route+WD.route, cy, X.tier, cy,
+      ln.tier ? TONE[ln.tier] : "var(--line)", !!ln.tier);
+    svg += box(X.tier, cy-20, WD.tier, 40, ln.tier
+      ? {label:LABEL[ln.tier], detail:"trust "+ln.trust, state:"done",
+         accent:TONE[ln.tier], fill:SOFT[ln.tier]}
+      : {label:"—", state:"pending"});
+  });
+
+  return `<h2>How each finding was reached</h2>
+    <p class="sub" style="margin-bottom:12px">Every box is a step that actually ran.
+      Lines turn green where a check supported the finding and red where it raised a
+      doubt. Only the router and the testable check are plain code; the rest are models.</p>
+    <div class="map"><svg viewBox="0 0 ${W} ${H}" role="img" style="min-width:1000px;width:100%;height:auto"
+      aria-label="A map of how each finding was reached">${svg}</svg></div>
+    <div class="legend">
+      <span style="color:var(--go)">— supports</span>
+      <span style="color:var(--stop)">— raises a doubt</span>
+      <span style="color:var(--muted)">faded = not reached yet</span>
+    </div>`;
+}
+
+// Papers grouped by where they came from, each with how well it matched.
+function shelves(papers){
+  const groups = {};
+  for (const p of papers) (groups[p.shelf || "Europe PMC"] ||= []).push(p);
+  return Object.entries(groups).map(([name, ps]) => `
+    <div class="shelf"><span>${esc(name)}</span><span>${ps.length}</span></div>
+    ${ps.map(paper).join("")}`).join("");
+}
+function paper(p){
+  const url = `https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(p.pmid)}/`;
+  return `<div class="paper">
+    <div class="relrow"><span class="rel"><i style="width:${Math.max(2, p.relevance)}%"></i></span>
+      <span class="pct">${p.relevance}%</span></div>
+    <a class="t" href="${url}" target="_blank" rel="noopener">${esc(p.title)}</a>
+    <div class="meta">${esc(p.authors || "")}${p.journal ? " &middot; " + esc(p.journal) : ""}${
+      p.year ? " &middot; " + esc(p.year) : ""} <span class="pm">PMID ${esc(p.pmid)}</span></div>
+    <span class="tag${p.full_text ? " on" : ""}">${
+      p.full_text ? `full text read &middot; ${p.paragraphs} \u00b6` : "abstract only"}</span>
+    ${p.passage ? `<p class="psg">${esc(p.passage)}</p>` : ""}
+  </div>`;
+}
+
+
+// ---- The run as a graph -----------------------------------------------------
+// A scientist auditing an answer needs to see who did what and why. Every box in
+// the flow view becomes a node here, every hand-off an edge. Click any node to
+// read what that agent actually decided.
+const KIND = {
+  // Bright, clearly different colours: the drawing is shrunk to fit the panel,
+  // so muted shades or near-matches stop being readable at that size.
+  question:  {c:"#818CF8", r:36, label:"Question"},
+  orch:      {c:"#A855F7", r:32, label:"Orchestrator"},
+  agent:     {c:"#EC4899", r:30, label:"Agent"},
+  finding:   {c:"#3B82F6", r:27, label:"Finding"},
+  check:     {c:"#22D3EE", r:21, label:"Check"},
+  paper:     {c:"#94A3B8", r:20, label:"Abstract only"},
+  paperfull: {c:"#34D399", r:23, label:"Full text read"},
+  router:    {c:"#F97316", r:23, label:"Jev router"},
+  ACT_ON:    {c:"#22C55E", r:26, label:"Act on it"},
+  CHECK:     {c:"#FACC15", r:26, label:"Check first"},
+  SET_ASIDE: {c:"#EF4444", r:26, label:"Set aside"},
+};
+
+// Three separate views, not one graph zoomed. Each level holds only the nodes
+// that belong to it and is laid out on its own, so the canvas is never crowded.
+// A scientist steps in and out with buttons; nothing overlaps at any depth.
+const LEVELS = [
+  {id:0, name:"The run",        hint:"Who did what, and how each finding ended up."},
+  {id:1, name:"The checks",     hint:"The three checks on each finding and how Jev used them."},
+  {id:2, name:"The papers",     hint:"Every paper the librarian read, and how well it matched."},
+];
+
+function buildGraph(s, level, pick){
+  const t = s.trace || {shared:[], lanes:[]};
+  const N = [], E = [];
+  const add = (id, kind, text, info, near) =>
+    { N.push({id, kind, text, info, near, x:0, y:0, vx:0, vy:0}); return id; };
+  const link = (a, b, label, tone) => E.push({a, b, label, tone});
+  const by = Object.fromEntries(t.shared.map(n => [n.key, n]));
+  const lanes = t.lanes || [];
+  const tierTone = ln => ln.tier === "ACT_ON" ? "up" : ln.tier === "SET_ASIDE" ? "down" : null;
+
+  // --- level 2: the librarian and the papers it read ------------------------
+  if (level === 2) {
+    add("lib", "agent", "Librarian", {title:"Searched the literature",
+      body:by.papers ? by.papers.detail : "", who:by.papers ? by.papers.agent : "Librarian",
+      why:"Searches Europe PMC and the Pan-Cancer Atlas, then ranks every passage so "
+        + "the later checks see the most relevant text first.", saw:"the question"});
+    (s.papers || []).slice(0, 12).forEach((p, i) => {
+      const id = "p"+i;
+      add(id, p.full_text ? "paperfull" : "paper", p.relevance+"%", {
+        title:p.title, body:p.passage || "(no matching passage)",
+        who:[p.authors, p.journal, p.year].filter(Boolean).join(" · ") || "unknown",
+        why:p.full_text ? `Full text read: ${p.paragraphs} paragraphs searched.`
+                        : "Abstract only; the full text was never searched.",
+        saw:`Ranked ${p.relevance}% against the question. PMID ${p.pmid}.`}, "lib");
+      link("lib", id, p.full_text ? "READ FULL" : "ABSTRACT", p.relevance >= 50 ? "up" : null);
+    });
+    return {N, E};
+  }
+
+  // --- level 1: one finding's checks, or all of them ------------------------
+  if (level === 1) {
+    const chosen = /^f(\d+)$/.test(pick || "") ? [+pick.slice(1)] : lanes.map((_, i) => i);
+    chosen.forEach(i => {
+      const ln = lanes[i]; if (!ln) return;
+      const f = "f"+i;
+      add(f, "finding", "Finding "+(i+1), {title:"Proposed finding", body:ln.claim || "…",
+        who:"Orchestrator", why:"One of the claims the question was split into.",
+        saw:"the question and the ranked passages"});
+      (ln.steps || []).filter(x => x.key !== "route").forEach(st => {
+        const c = f+"_"+st.key;
+        add(c, "check", st.label.split(" ")[0], {title:st.label, body:st.detail,
+          who:st.agent, vote:st.vote, why:st.why, saw:st.saw, took:st.took, at:st.at,
+          state:st.state}, f);
+        link(f, c, "CHECKED BY");
+        link(c, f+"_r", st.vote > 0 ? "SUPPORTS" : st.vote < 0 ? "DOUBTS" : "UNCLEAR",
+          st.vote > 0 ? "up" : st.vote < 0 ? "down" : null);
+      });
+      const route = (ln.steps || []).find(x => x.key === "route");
+      add(f+"_r", "router", "Jev", {title:"Jev router decided",
+        body:route ? route.detail : "waiting", who:route ? route.agent : "Plain code",
+        why:route ? route.why : "", saw:route ? route.saw : "",
+        took:route ? route.took : null, at:route ? route.at : null});
+      if (ln.tier) {
+        add(f+"_v", ln.tier, LABEL[ln.tier], {title:LABEL[ln.tier],
+          body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Verdict",
+          why:route ? route.why : "", saw:"the three checks"});
+        link(f+"_r", f+"_v", "ROUTED TO", tierTone(ln));
+      }
+    });
+    return {N, E};
+  }
+
+  // --- level 0: everything, connected ---------------------------------------
+  add("q", "question", "Question", {title:"The scientist's question",
+    body:s.question || "(none yet)", who:"You",
+    why:"Everything below is an attempt to answer this.", saw:"—"});
+  if (by.papers) {
+    add("lib", "agent", "Librarian", {title:by.papers.label, body:by.papers.detail,
+      who:by.papers.agent, state:by.papers.state,
+      why:"Searches and ranks published work so later checks have real evidence.",
+      saw:"the question"});
+    link("q", "lib", "SEARCHED FOR");
+  }
+  if (by.propose) {
+    add("ana", "orch", "Orchestrator", {title:"Splits the question into findings",
+      body:by.propose.detail, who:by.propose.agent, state:by.propose.state,
+      why:"It decides what separate claims are worth checking. Every finding came from here.",
+      saw:"the question" + (by.papers ? " and the ranked passages" : "")});
+    link("q", "ana", "ANSWERED BY");
+    if (by.papers) link("lib", "ana", "GROUNDED");
+  }
+  lanes.forEach((ln, i) => {
+    const f = "f"+i;
+    add(f, "finding", "Finding "+(i+1), {title:"Proposed finding", body:ln.claim || "…",
+      who:"Orchestrator", why:"One of the claims the question was split into.",
+      saw:"the question and the ranked passages"});
+    link("ana", f, "PROPOSED");
+    (ln.steps || []).forEach(st => {
+      if (st.key === "route") return;
+      const c = f+"_"+st.key;
+      add(c, "check", st.label.split(" ")[0], {title:st.label, body:st.detail,
+        who:st.agent, vote:st.vote, why:st.why, saw:st.saw, took:st.took, at:st.at,
+        state:st.state});
+      link(f, c, "CHECKED BY");
+      link(c, f+"_r", st.vote > 0 ? "SUPPORTS" : st.vote < 0 ? "DOUBTS" : "UNCLEAR",
+        st.vote > 0 ? "up" : st.vote < 0 ? "down" : null);
+    });
+    const route = (ln.steps || []).find(x => x.key === "route");
+    add(f+"_r", "router", "Jev", {title:"Jev router decided",
+      body:route ? route.detail : "waiting", who:route ? route.agent : "Plain code",
+      why:route ? route.why : "", saw:route ? route.saw : "",
+      took:route ? route.took : null, at:route ? route.at : null});
+    if (ln.tier) {
+      add(f+"_v", ln.tier, LABEL[ln.tier], {title:LABEL[ln.tier],
+        body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Verdict",
+        why:route ? route.why : "", saw:"the three checks"});
+      link(f+"_r", f+"_v", "ROUTED TO", tierTone(ln));
+    }
+  });
+  return {N, E};
+}
+
+function gridLayout(N, E, W, H){
+  const groups = {};
+  for (const n of N) {
+    const g = (/^(f\d+)/.exec(n.id) || [,"misc"])[1];
+    (groups[g] ||= []).push(n);
+  }
+  const keys = Object.keys(groups);
+  const cols = keys.length <= 2 ? keys.length : 2;   // wide cells read better
+  const rows = Math.ceil(keys.length / cols);
+  const cw = W / cols, ch = H / rows;
+  keys.forEach((k, gi) => {
+    const cx = cw * (gi % cols) + cw/2, cy = ch * Math.floor(gi/cols) + ch/2;
+    const g = groups[k];
+    const head = g.find(n => n.id === k) || g[0];
+    const checks = g.filter(n => n.kind === "check");
+    const jev = g.find(n => n.kind === "router");
+    const verdict = g.find(n => ["ACT_ON","CHECK","SET_ASIDE"].includes(n.kind));
+    // finding on the left, its checks stacked in the middle, Jev then the verdict
+    head.x = cx - cw*0.36; head.y = cy;
+    checks.forEach((n, i) => {
+      n.x = cx - cw*0.04;
+      n.y = cy + (i - (checks.length-1)/2) * 104;
+      n.side = -1;          // captions run left, into the gap before Jev
+    });
+    if (jev)     { jev.x = cx + cw*0.20; jev.y = cy; }
+    if (verdict) { verdict.x = cx + cw*0.41; verdict.y = cy; }
+  });
+}
+
+// Layout: a spring settles the graph into its own shape. Edges pull connected
+// work together, every node pushes its neighbours away, and a gentle pull to
+// the middle stops it drifting. The constants were searched rather than
+// guessed: with these, no two circles in a forty-node run come within 100px.
+function layout(N, E, W, H, grouped){
+  const idx = Object.fromEntries(N.map((n,i) => [n.id, i]));
+  if (grouped) return gridLayout(N, E, W, H);
+  const free = N.filter(n => !n.near);
+  free.forEach((n,i) => {
+    const a = i * 2.39;                 // a spiral start, so no two begin together
+    n.x = W/2 + Math.cos(a) * (150 + i*26);
+    n.y = H/2 + Math.sin(a) * (115 + i*18);
+    n.vx = n.vy = 0;
+  });
+  for (let step = 0; step < 800; step++){
+    for (let i = 0; i < free.length; i++) for (let j = i+1; j < free.length; j++){
+      const a = free[i], b = free[j];
+      let dx = b.x-a.x, dy = b.y-a.y;
+      const d2 = dx*dx + dy*dy || 1, d = Math.sqrt(d2);
+      const want = KIND[a.kind].r + KIND[b.kind].r + 150;
+      const push = d < want ? 100000/d2 * (want/d) : 45000/d2;
+      dx /= d; dy /= d;
+      a.vx -= dx*push; a.vy -= dy*push; b.vx += dx*push; b.vy += dy*push;
+    }
+    for (const e of E){
+      const a = N[idx[e.a]], b = N[idx[e.b]];
+      if (!a || !b || a.near || b.near) continue;
+      const dx = b.x-a.x, dy = b.y-a.y, d = Math.hypot(dx,dy) || 1;
+      const rest = KIND[a.kind].r + KIND[b.kind].r + 130;
+      const pull = (d - rest) * 0.016;
+      a.vx += dx/d*pull; a.vy += dy/d*pull; b.vx -= dx/d*pull; b.vy -= dy/d*pull;
+    }
+    for (const n of free){
+      n.vx += (W/2 - n.x) * 0.0018; n.vy += (H/2 - n.y) * 0.0026;
+      n.x += (n.vx *= 0.86); n.y += (n.vy *= 0.86);
+      const r = KIND[n.kind].r + 16;
+      n.x = Math.max(r+60, Math.min(W-r-60, n.x));
+      n.y = Math.max(r+24, Math.min(H-r-24, n.y));
+    }
+  }
+  // Children of a node ring around it; papers have no order worth keeping.
+  const kids = {};
+  for (const n of N) if (n.near) (kids[n.near] ||= []).push(n);
+  for (const [pid, list] of Object.entries(kids)){
+    const p = N[idx[pid]]; if (!p) continue;
+    // Spread the ring to fill the canvas rather than huddling near the centre.
+    const room = Math.min(W, H) * 0.40;
+    const ring = Math.max(KIND[p.kind].r + 120 + list.length * 12, room);
+    list.forEach((n,i) => {
+      const a = -Math.PI/2 + (i/list.length) * Math.PI*2;
+      n.x = p.x + Math.cos(a)*ring;
+      n.y = p.y + Math.sin(a)*ring*0.78;
+      n.side = Math.cos(a) >= 0 ? 1 : -1;
+    });
+  }
+}
+
+// One finding on its own gets a tidy cell instead of a spring.
+function gridLayout(N, E, W, H){
+  const checks = N.filter(n => n.kind === "check");
+  const head = N.find(n => n.kind === "finding");
+  const jev = N.find(n => n.kind === "router");
+  const verdict = N.find(n => ["ACT_ON","CHECK","SET_ASIDE"].includes(n.kind));
+  const cx = W/2, cy = H/2;
+  if (head) { head.x = cx - W*0.33; head.y = cy; }
+  checks.forEach((n, i) => {
+    n.x = cx - W*0.04;
+    n.y = cy + (i - (checks.length-1)/2) * 120;
+    n.side = -1;
+  });
+  if (jev)     { jev.x = cx + W*0.18; jev.y = cy; }
+  if (verdict) { verdict.x = cx + W*0.37; verdict.y = cy; }
+}
+
+// Where a node's caption goes: beside it when it sits on a ring, underneath
+// otherwise. Long titles wrap onto a second line rather than running off.
+function capText(n, k, cap){
+  const words = cap.split(" ");
+  let l1 = "", l2 = "";
+  for (const w of words) {
+    if ((l1 + " " + w).trim().length <= 22) l1 = (l1 + " " + w).trim();
+    else if ((l2 + " " + w).trim().length <= 22) l2 = (l2 + " " + w).trim();
+  }
+  if (l2) l2 += "\u2026";
+  if (n.side) {
+    const x = n.x + n.side * (k.r + 12), anc = n.side > 0 ? "start" : "end";
+    return `<text x="${x.toFixed(1)}" y="${(n.y - (l2 ? 4 : 2)).toFixed(1)}"
+      text-anchor="${anc}" font-size="13" fill="var(--muted)" pointer-events="none"
+      >${esc(l1)}${l2 ? `<tspan x="${x.toFixed(1)}" dy="16">${esc(l2)}</tspan>` : ""}</text>`;
+  }
+  return `<text x="${n.x.toFixed(1)}" y="${(n.y + k.r + 20).toFixed(1)}" text-anchor="middle"
+    font-size="13" fill="var(--muted)" pointer-events="none"
+    >${esc(l1)}${l2 ? `<tspan x="${n.x.toFixed(1)}" dy="16">${esc(l2)}</tspan>` : ""}</text>`;
+}
+
+function graphView(s){
+  const {N, E} = buildGraph(s, LEVEL, PICK_F);
+  if (!N.length) return '<p class="sub">Ask a question to begin.</p>';
+  const grouped = LEVEL === 1 && PICK_F;   // only an isolated finding uses a cell
+  const W = Math.max(2000, Math.min(2600, 1150 + N.length * 22));
+  const H = Math.max(1200, Math.min(1550, 480 + N.length * 18));
+  layout(N, E, W, H, grouped);
+  // Crop to what was drawn, allowing for each circle's radius and its caption.
+  const rad = n => KIND[n.kind].r;
+  const ex0 = Math.min(...N.map(n => n.x - rad(n)));
+  const ex1 = Math.max(...N.map(n => n.x + rad(n)));
+  const ey0 = Math.min(...N.map(n => n.y - rad(n)));
+  const ey1 = Math.max(...N.map(n => n.y + rad(n)));
+  // Room for the captions that sit beside each circle, scaled to the drawing.
+  const padX = Math.max(60, Math.min(200, (ex1-ex0) * 0.14));
+  const padY = Math.max(30, Math.min(90,  (ey1-ey0) * 0.09));
+  const vx = ex0 - padX, vy = ey0 - padY;
+  const vw = (ex1 - ex0) + padX*2, vh = (ey1 - ey0) + padY*2;
+  const at = Object.fromEntries(N.map(n => [n.id, n]));
+  const tone = t => t === "up" ? "var(--go)" : t === "down" ? "var(--stop)" : "var(--line)";
+
+  const edges = E.map(e => {
+    const a = at[e.a], b = at[e.b]; if (!a || !b) return "";
+    const ra = KIND[a.kind].r, rb = KIND[b.kind].r;
+    const dx = b.x-a.x, dy = b.y-a.y, d = Math.hypot(dx,dy) || 1;
+    const x1 = a.x+dx/d*ra, y1 = a.y+dy/d*ra, x2 = b.x-dx/d*(rb+8), y2 = b.y-dy/d*(rb+8);
+    // The word sits just off the midpoint, nudged perpendicular to the line so
+    // it never lands on top of it.
+    const mx = (x1+x2)/2, my = (y1+y2)/2, nx = -dy/d, ny = dx/d;
+    return `<g><line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}"
+        y2="${y2.toFixed(1)}" stroke="${tone(e.tone)}" stroke-width="${e.tone?2.4:1.4}"
+        marker-end="url(#ar-${e.tone||'n'})" opacity="${e.tone?.92:.42}"/>
+      <text x="${(mx + nx*9).toFixed(1)}" y="${(my + ny*9 + 3).toFixed(1)}"
+        text-anchor="middle" font-size="11" font-family="var(--mono)"
+        letter-spacing="0.5" fill="var(--muted)" opacity="${e.tone?.9:.6}"
+        >${esc(e.label)}</text></g>`;
+  }).join("");
+
+  const nodes = N.map(n => {
+    const k = KIND[n.kind], sel = PICKED === n.id;
+    const running = n.info && n.info.state === "running";
+    const t = (n.info && n.info.title) || "";
+    const lab = n.text.toLowerCase(), tl = t.toLowerCase();
+    const cap = (!t || tl === lab || tl.startsWith(lab) || tl.startsWith("proposed")
+                 || n.kind === "check") ? "" : t;
+    return `<g class="gn" data-id="${esc(n.id)}" style="cursor:pointer">
+      ${running ? `<circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${k.r+6}"
+        fill="none" stroke="${k.c}" stroke-width="1.5" opacity=".5">
+        <animate attributeName="r" values="${k.r+4};${k.r+13};${k.r+4}" dur="1.7s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".55;0;.55" dur="1.7s" repeatCount="indefinite"/></circle>` : ""}
+      <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${k.r+9}" fill="${k.c}"
+        fill-opacity=".22" pointer-events="none"/>
+      <circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${k.r}" fill="${k.c}"
+        stroke="${sel?'var(--ink)':'var(--surface)'}" stroke-width="${sel?4:2}"/>
+      <!-- Labels are often wider than their circle and sit on bright colours, so a
+           dark outline keeps the white words readable wherever they land. -->
+      <text x="${n.x.toFixed(1)}" y="${(n.y+6).toFixed(1)}" text-anchor="middle"
+        font-size="16" font-weight="700" fill="#fff" stroke="#0B111C" stroke-width="4"
+        stroke-linejoin="round" paint-order="stroke" pointer-events="none"
+        >${esc(trunc(n.text, 12))}</text>
+      ${cap ? capText(n, k, cap) : ""}
+    </g>`;
+  }).join("");
+
+  const marker = (t,c) => `<marker id="ar-${t}" viewBox="0 0 10 10" refX="9" refY="5"
+    markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`;
+  const kinds = [...new Set(N.map(n => n.kind))];
+  const dots = kinds.map(k => `<span><i class="dot" style="background:${KIND[k].c}"></i>${KIND[k].label}</span>`).join("");
+  const arrows = [
+    ["var(--go)",   "supported the finding"],
+    ["var(--stop)", "raised a doubt"],
+    ["var(--line)", "passed work along"],
+  ].map(([c, t]) => `<span><i class="arr" style="background:${c}"></i>${t}</span>`).join("");
+  const legend = `<div class="key"><div class="krow"><b>Circles</b>${dots}</div>
+    <div class="krow"><b>Arrows</b>${arrows}</div></div>`;
+
+  // Step in and out. Each button names what you will see, not a zoom factor.
+  const steps = LEVELS.map(l => `<button class="step" data-l="${l.id}"
+    aria-pressed="${l.id === LEVEL}">${l.name}</button>`).join("");
+  const deeper = LEVEL < 2
+    ? `<button class="godeep" data-l="${LEVEL+1}">Go deeper: ${LEVELS[LEVEL+1].name} &rarr;</button>` : "";
+  const back = LEVEL > 0 ? `<button class="crumb" data-l="${LEVEL-1}">&larr; Back</button>` : "";
+  const only = LEVEL === 1 && PICK_F
+    ? `<button class="crumb" id="allf">Show every finding</button>` : "";
+
+  return `<div class="stepbar">${steps}</div>
+    <h2>${esc(LEVELS[LEVEL].name)}</h2>
+    <p class="sub" style="margin-bottom:10px">${esc(LEVELS[LEVEL].hint)}
+      ${LEVEL === 0 ? "Click a finding, then go deeper to see only its checks." : ""}</p>
+    <div class="map" id="gwrap"><svg id="gsvg" viewBox="0 0 ${W} ${H}"
+      style="width:100%;height:auto" role="img"
+      aria-label="${esc(LEVELS[LEVEL].name)}: a map of the agents and their work">
+      <defs>${marker("up","var(--go)")}${marker("down","var(--stop)")}${marker("n","var(--line)")}</defs>
+      ${edges}${nodes}</svg></div>
+    <div class="navbar">${back}${only}${deeper}</div>
+    ${legend}
+    <div id="inspect">${inspect(N)}</div>`;
+}
+
+function inspect(N){
+  const n = N.find(x => x.id === PICKED);
+  if (!n) return `<p class="sub" style="margin-top:14px">Click any circle to see who did
+    it, what they concluded, when, and why.</p>`;
+  const i = n.info || {};
+  const row = (k, label, body) => body ? `<div class="wrow">
+    <span class="wk">${k}</span><span><b>${label}</b><br><span class="d">${esc(body)}</span></span></div>` : "";
+  const when = i.took != null
+    ? `Took ${i.took}s${i.at ? ", at " + new Date(i.at*1000).toLocaleTimeString() : ""}`
+    : i.state === "running" ? "Running now" : "";
+  const effect = i.vote > 0 ? "Raised trust in this finding. A supporting check can lift a "
+      + "finding toward Act on it, but never past what the other checks allow."
+    : i.vote < 0 ? "Lowered trust in this finding. Two doubts send it to Set aside."
+    : i.vote === 0 ? "Left trust unchanged." : "";
+  return `<div class="inspector" style="border-left:4px solid ${KIND[n.kind].c}">
+    <div class="ihead"><b>${esc(i.title || n.text)}</b>
+      <span class="pill" style="background:var(--raised);color:var(--muted)">${esc(KIND[n.kind].label)}</span></div>
+    ${row("WHO", "Who did it", i.who)}
+    ${row("WHAT", "What it concluded", i.body)}
+    ${row("WHEN", "When", when)}
+    ${row("WHY", "Why it concluded that", i.why)}
+    ${row("SAW", "What it was shown", i.saw)}
+    ${row("EFFECT", "Effect on the verdict", effect)}
+  </div>`;
+}
+
+function render(){
+  if (!LAST) return;
+  // If a view throws, say so instead of silently leaving the last one on screen.
+  try {
+    $("view").innerHTML = view === "graph" ? graphView(LAST)
+      : view === "map" ? mapView(LAST) : listView(LAST);
+  } catch (err) {
+    console.error(err);
+    $("view").innerHTML = `<p class="err">This view could not be drawn: ${esc(err.message)}</p>`;
+    return;
+  }
+  if (view === "graph") {
+    const go = l => { LEVEL = Math.max(0, Math.min(2, l)); PICKED = null;
+      if (LEVEL !== 1) PICK_F = null; render(); };
+    document.querySelectorAll(".step,.godeep,.crumb[data-l]").forEach(b =>
+      b.onclick = () => go(+b.dataset.l));
+    const allf = $("allf");
+    if (allf) allf.onclick = () => { PICK_F = null; PICKED = null; render(); };
+    const svg = $("gsvg");
+    if (svg) svg.addEventListener("click", e => {
+      const g = e.target.closest(".gn"); if (!g) return;
+      const id = g.dataset.id;
+      PICKED = PICKED === id ? null : id;
+      if (/^f\d+$/.test(id)) PICK_F = id;   // pick a finding, then step in to it
+      render();
+    });
+  }
+  if (view === "list") {
+    const f = $("filters");
+    if (f) f.addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      filter = b.dataset.f; render();
+    });
+  }
+}
+
+function listView(s){
+  if (!s.claims.length) return '<p class="sub">Ask a question to begin.</p>';
+  return `<h2>Findings, sorted by what you can act on</h2>` + [...s.claims]
+    .sort((a,b) => b.trust - a.trust).map(c => `
+      <div class="claim ${c.tier}">
+        <div class="ch"><div>${esc(c.text)}</div>
+          <span class="pill p-${c.tier}">${LABEL[c.tier]}</span></div>
+        ${c.votes.map(v => `<div class="v">
+          <span class="m ${v.v>0?'up':v.v<0?'down':'flat'}">${v.v>0?'+':v.v<0?'−':'·'}</span>
+          <span><b>${esc(v.n)}</b><br><span class="d">${esc(v.d)}</span></span></div>`).join("")}
+      </div>`).join("");
+}
 
 $("go").onclick = async () => {
   $("err").textContent = "";
@@ -122,21 +795,20 @@ async function poll(){
       : "<div>Nothing running.</div>";
     $("steps").scrollTop = $("steps").scrollHeight;
 
-    $("claims").innerHTML = s.claims.length ? [...s.claims]
-      .sort((a,b) => b.trust - a.trust).map(c => `
-        <div class="claim ${c.tier}">
-          <div class="ch"><div>${esc(c.text)}</div>
-            <span class="pill p-${c.tier}">${LABEL[c.tier]}</span></div>
-          ${c.votes.map(v => `<div class="v">
-            <span class="m ${v.v>0?'up':v.v<0?'down':'flat'}">${v.v>0?'+':v.v<0?'−':'·'}</span>
-            <span><b>${esc(v.n)}</b><br><span class="d">${esc(v.d)}</span></span></div>`).join("")}
-        </div>`).join("")
-      : '<p class="sub">Ask a question to begin.</p>';
+    const fresh = !LAST || (LAST.trace && s.trace &&
+      JSON.stringify(LAST.trace) !== JSON.stringify(s.trace));
+    LAST = s;
+    if (fresh || !$("view").firstChild) render();
 
-    $("papers").innerHTML = s.papers.length
-      ? s.papers.map(p => `<li><a href="https://pubmed.ncbi.nlm.nih.gov/${esc(p.pmid)}/"
-          target="_blank">PMID ${esc(p.pmid)}</a> — ${esc(p.title)}</li>`).join("")
-      : "<li>None yet.</li>";
+    const st = s.lit_stats || {};
+    $("litbody").innerHTML = s.papers.length ? `
+      <p class="counts">${st.papers||s.papers.length} papers &middot;
+        ${st.full||0} read in full &middot; ${st.passages||0} strong passages</p>
+      <p class="ranked">Ranked for: ${esc(st.ranked_for || s.question)}</p>
+      ${shelves(s.papers)}`
+      : (s.status === "running"
+         ? '<p class="sub">Searching\u2026</p>'
+         : '<p class="sub">Papers appear once a run starts.</p>');
   } catch (e) { /* server restarting; next tick will catch up */ }
 }
 poll(); setInterval(poll, 1500);

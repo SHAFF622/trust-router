@@ -34,7 +34,7 @@ protein target. The model is right roughly 60% of the time. It does not reliably
 know when it is wrong. Your job is not to improve its predictions. Your job is
 to say which of them are safe to act on.
 
-For each case in the input file, return one of three decisions:
+For each case in the input file, returone of three decisions:
 
   ACT_ON    You believe this prediction. The chemist should consider making it.
   CHECK     Something is off. Look into it before committing bench time.
