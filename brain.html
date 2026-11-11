@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Brain</title>
+<!--
+  The brain view. It draws one run of the panel as a network of firing dots:
+  the question in the middle, the findings around it, each agent's steps
+  around those, and what each step read and said at the edge.
+
+  It plays the run back once, in the order things really happened, then goes
+  still. A finding the papers or the reviewer objected to blinks red. Click it
+  to see why, correct it, and only that finding's checks run again.
+
+  All data comes from /api/state on the same server (app.py). Nothing here is
+  made up.
+-->
+<style>
+  :root{
+    /* Palette: coolors.co/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226
+       Cool = the agents working normally. Sand = the question and verdicts.
+       Warm = trouble only: amber relies on a problem, red is the problem. */
+    --bg:#001219;--panel:#04202A;--line:#123A46;--fg:#F2EBDA;--muted:#94B4AE;
+    --err:#AE2012;--err-text:#F07A66;--warn:#EE9B00;--ok:#94D2BD;--link:#94D2BD;
+    --trust:linear-gradient(90deg,#005F73,#0A9396,#94D2BD,#E9D8A6,#EE9B00,#CA6702,#BB3E03,#AE2012,#9B2226)}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+  #c{position:fixed;inset:0;display:block;cursor:grab;touch-action:none}
+  #c.drag{cursor:grabbing}
+  .top{position:fixed;left:16px;top:14px;right:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;pointer-events:none}
+  .pill{pointer-events:auto;background:rgba(4,32,42,.88);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted)}
+  .pill a{color:var(--link);text-decoration:none}
+  .crumbs span{color:var(--muted)} .crumbs b{color:var(--fg);font-weight:600}
+  .ctrl button{background:none;border:0;color:var(--fg);font:inherit;cursor:pointer;padding:0 4px}
+  .ctrl button.on{color:var(--link);font-weight:600}
+  #caption{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);text-align:center;background:rgba(4,32,42,.92);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px}
+  #caption i,.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+  .legend .scale{display:flex;align-items:center;gap:6px;width:100%}.legend .scale b{flex:1;height:4px;border-radius:4px;background:var(--trust)}
+  .legend{position:fixed;left:16px;bottom:14px;display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);background:rgba(4,32,42,.88);border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:calc(100% - 32px)}
+  .hint{position:fixed;right:16px;bottom:14px;font-size:12px;color:var(--muted);background:rgba(4,32,42,.88);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+  #empty{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:16px}
+  #empty a{color:var(--link)}
+  #panel{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--panel);border-left:1px solid var(--line);padding:20px;overflow:auto;transform:translateX(100%);transition:transform .25s}
+  #panel.open{transform:none}
+  #panel h3{margin:0 0 4px;font-size:16px;padding-right:24px}
+  #panel .who{font-size:12px;color:var(--muted);margin-bottom:14px}
+  #panel .box{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px;overflow-wrap:anywhere}
+  #panel .box.err{border-color:var(--err);background:rgba(174,32,18,.14)}
+  #panel .box.warn{border-color:var(--warn);background:rgba(238,155,0,.08)}
+  #panel .box.ok{border-color:var(--ok);background:rgba(148,210,189,.09)}
+  #panel .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+  #panel textarea{width:100%;min-height:90px;background:#001219;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit}
+  #panel button.act{margin-top:8px;background:linear-gradient(135deg,#BB3E03,#AE2012);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+  #panel button.sec{margin-top:8px;margin-left:6px;background:transparent;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+  #panel button:disabled{opacity:.5;cursor:default}
+  #panel .note{font-size:12px;color:var(--muted);margin-top:6px}
+  #panel .msg{font-size:12px;color:var(--err-text);margin-top:6px}
+  #close{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer}
+  @media (max-width:700px){.hint{display:none}#caption{bottom:190px}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="The run as a network of dots. Each dot is a step."></canvas>
+<div id="empty"><div id="emptymsg">No run yet.<br>Type a question on the <a class="home" href="/">main page</a>. Then come back here.</div></div>
+<div class="top">
+  <div class="pill crumbs" id="crumbs"></div>
+  <div class="pill ctrl">
+    <button id="play">Pause</button> ·
+    <button id="replay">Replay</button> ·
+    <button data-s="0.5">0.5×</button><button data-s="1" class="on">1×</button><button data-s="2">2×</button>
+  </div>
+  <div class="pill" id="status">Loading…</div>
+  <div class="pill"><a class="home" href="/">← Main page</a></div>
+</div>
+<div id="caption">Waiting for the run…</div>
+<div class="legend">
+  <span><i style="background:#E9D8A6"></i>Question / verdict</span>
+  <span><i style="background:#0A9396"></i>Analyst</span>
+  <span><i style="background:#94D2BD"></i>Librarian</span>
+  <span><i style="background:#5FA8C8"></i>Critic</span>
+  <span><i style="background:#2A7F8F"></i>Papers</span>
+  <span><i style="background:#D8F3EA"></i>World model</span>
+  <span><i style="background:#5B7F85"></i>Plain code</span>
+  <span><i style="background:#AE2012"></i>Problem</span>
+  <span><i style="background:#EE9B00"></i>Uses a problem</span>
+  <span><i style="background:#94D2BD;box-shadow:0 0 0 2px #001219,0 0 0 3px #F2EBDA"></i>Corrected by you</span>
+  <span class="scale">Act on it <b></b> Set aside</span>
+</div>
+<div class="hint">Scroll or pinch to zoom · drag to move · click any dot</div>
+<aside id="panel"><button id="close" aria-label="Close">×</button><div id="pbody"></div></aside>
+
+<script src="/source.js"></script>
+<script>
+document.querySelectorAll('a.home').forEach(a=>a.href=TR.home);
+// Every role takes a colour from the cool half of the palette; the warm half is reserved for trouble.
+const COL={router:'#E9D8A6',analyst:'#0A9396',librarian:'#94D2BD',critic:'#5FA8C8',paper:'#2A7F8F',code:'#5B7F85',world:'#D8F3EA'};
+const RED='#AE2012', AMBER='#EE9B00', FIXED='#94D2BD';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hex=h=>{const n=parseInt(h.slice(1),16);return `${n>>16},${n>>8&255},${n&255}`};
+const short=(s,n)=>{s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s};
+function roleOf(agent){agent=(agent||'').toLowerCase();
+  if(agent.startsWith('librarian'))return 'librarian';if(agent.startsWith('critic'))return 'critic';
+  if(agent.startsWith('analyst'))return 'analyst';return 'code';}
+
+// ---------- turning the server's record of the run into dots and lines ----------
+// Every dot gets a fixed position from what it is, so the picture does not jump
+// around as new steps arrive. "t" is when it happened, in seconds since the run began.
+let S=null, G={nodes:[],edges:[],byKey:{}}, started=0, offset=0;
+function build(s){
+  const nodes=[], edges=[], byKey={};
+  const add=(n,parent)=>{n.kids=[];nodes.push(n);byKey[n.key]=n;if(parent){n.parent=parent;parent.kids.push(n);edges.push([n,parent]);}return n};
+  const rel=x=>x?Math.max(0,x-started):Infinity;
+  const tr=s.trace||{shared:[],lanes:[]};
+  const sh=Object.fromEntries((tr.shared||[]).map(n=>[n.key,n]));
+  const lanes=(tr.lanes||[]).filter(l=>l.claim);
+  const problems=lanes.filter(l=>l.problem&&!l.dismissed);
+  const Q=add({key:'q',lvl:0,role:'router',x:0,y:0,r:15,label:'Question',t:0,
+    info:{kind:'question',text:s.question}});
+  if(problems.length)Q.dep=true;
+  if(sh.papers){const P=add({key:'papers',lvl:1,role:'librarian',x:80,y:40,r:7,label:sh.papers.label,t:rel(sh.papers.at),
+      info:{kind:'shared',n:sh.papers}},Q);
+    (s.papers||[]).forEach((p,k)=>{const a=k*2.4, rr=34+k*7;
+      add({key:'paper'+k,lvl:3,role:'paper',x:P.x+Math.cos(a)*rr,y:P.y+Math.sin(a)*rr,r:2.4,
+        label:short(p.title,60),t:rel(sh.papers.done_at)+k*.08,info:{kind:'paper',p}},P);});}
+  // The world model: what was learned from the papers, kept between runs. One dot per stored
+  // finding (subject -> direction -> outcome, with the exact quote). The papers checks below
+  // draw a faint line to each finding they were judged against.
+  if(sh.world){const W=add({key:'world',lvl:1,role:'world',x:150,y:-110,r:8,label:sh.world.label,t:rel(sh.world.at),
+      info:{kind:'shared',n:sh.world}},byKey.papers||Q);
+    ((s.world&&s.world.findings)||[]).forEach((f,k)=>{const a=k*2.1+.6, rr=30+k*5;
+      add({key:'wf'+f.id,lvl:3,role:'world',x:W.x+Math.cos(a)*rr,y:W.y+Math.sin(a)*rr,r:2.8,
+        label:`${short(f.subject,30)} → ${f.direction} ${short(f.outcome,30)}`,t:rel(sh.world.done_at)+k*.06,
+        info:{kind:'wfinding',f}},W);});}
+  const A=sh.propose?add({key:'propose',lvl:1,role:'analyst',x:-80,y:-40,r:7,label:sh.propose.label,
+    t:rel(sh.propose.at),info:{kind:'shared',n:sh.propose}},Q):Q;
+  const order=['lit','critic','testable','route'];
+  lanes.forEach((ln,i)=>{
+    const n=lanes.length, a=-Math.PI/2+i/n*Math.PI*2, R=300;
+    const fixed=(ln.fixes||[]).length>0;
+    const F=add({key:'f'+i,lvl:1,role:'analyst',x:Math.cos(a)*R,y:Math.sin(a)*R,r:9,
+      label:short(ln.claim,70),t:rel(ln.at),lane:i,info:{kind:'finding',ln,i}},A);
+    const route=(ln.steps||[]).find(x=>x.key==='route');
+    if(ln.problem&&!ln.dismissed&&route){F.err=true;F.errT=rel(route.at);}
+    if(fixed&&!ln.problem&&route){F.fixedT=rel(route.at);}
+    const steps=[...(ln.steps||[])].sort((x,y)=>order.indexOf(x.key)-order.indexOf(y.key));
+    steps.forEach((st,j)=>{
+      const sa=a+(j-(steps.length-1)/2)*0.2, SR=R+120;
+      const role=st.key==='route'?'router':roleOf(st.agent);
+      const done=st.state!=='running';
+      const N=add({key:`f${i}-${st.key}`,lvl:2,role,x:Math.cos(sa)*SR,y:Math.sin(sa)*SR,r:5,
+        label:st.label,sub:st.detail||'',t:rel(st.started),doneT:done?rel(st.at):Infinity,
+        caught:st.vote===-1&&(st.key==='lit'||st.key==='critic'),info:{kind:'step',st,ln,i}},F);
+      if(F.err&&st.key==='route')N.dep=true;
+      if(fixed&&!ln.problem&&st.key==='route')N.fixedT=N.doneT;
+      // the deepest level: what this step was shown, and what it said
+      if(done&&st.saw)add({key:N.key+'-saw',lvl:3,role,x:N.x+Math.cos(sa-.5)*55,y:N.y+Math.sin(sa-.5)*55,r:2,
+        label:'Saw: '+short(st.saw,70),t:N.doneT,info:{kind:'leaf',title:'What this step was shown',text:st.saw,st}},N);
+      if(done&&st.why)add({key:N.key+'-why',lvl:3,role,x:N.x+Math.cos(sa+.5)*55,y:N.y+Math.sin(sa+.5)*55,r:2,
+        label:'Said: '+short(st.why,70),t:N.doneT,info:{kind:'leaf',title:'What this step said',text:st.why,st}},N);
+      // the librarian and critic read the same papers, so draw that link too
+      if(done&&(st.key==='lit'||st.key==='critic'))
+        for(let k=0;k<Math.min(4,(s.papers||[]).length);k++)if(byKey['paper'+k])edges.push([N,byKey['paper'+k],'faint']);
+      if(st.key==='route'&&done)edges.push([N,Q,'back']);
+      if(done&&st.key==='lit')for(const id of (ln.world||[]))if(byKey['wf'+id])edges.push([N,byKey['wf'+id],'faint']);
+    });
+    (ln.fixes||[]).forEach((fx,k)=>add({key:`f${i}-fix${k}`,lvl:3,role:'router',x:F.x+Math.cos(a)*-40+k*8,y:F.y+Math.sin(a)*-40,r:2.4,
+      label:'Before your fix: '+short(fx.before,60),t:rel(fx.at),info:{kind:'leaf',title:'What it said before you corrected it',text:fx.before}},F));
+  });
+  G={nodes,edges,byKey,problems:problems.length,lanes};
+}
+
+// ---------- the clock: live while running, a once-through replay afterwards ----------
+// In a replay a long run is squeezed into about 45 seconds, keeping the real order.
+const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+let W,H,dpr,zoom=1,px=0,py=0,sel=null,sim=0,speed=1,playing=true,last=0,mode='live',scale=1,fitted=false,runKey='';
+const lastTime=()=>Math.max(1,...G.nodes.map(n=>Math.max(n.t===Infinity?0:n.t,n.doneT===Infinity||n.doneT==null?0:n.doneT)));
+const disp=t=>t===Infinity||t==null?Infinity:t*scale;
+function startReplay(){mode='replay';scale=Math.min(1,45/lastTime());sim=0;playing=true;playBtn.textContent='Pause';lastCap='';}
+function goLive(){mode='live';scale=1;playing=true;playBtn.textContent='Pause';}
+const realNow=()=>Date.now()/1000+offset-started;
+
+function size(){dpr=devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';}
+size();addEventListener('resize',size);
+function fit(){const xs=G.nodes.map(n=>n.x),ys=G.nodes.map(n=>n.y);if(!xs.length)return;
+  const w=Math.max(...xs)-Math.min(...xs)+200,h=Math.max(...ys)-Math.min(...ys)+200;
+  zoom=Math.min(2,Math.max(.3,Math.min(W/w,(H-120)/h)));px=-(Math.max(...xs)+Math.min(...xs))/2*zoom;py=-(Math.max(...ys)+Math.min(...ys))/2*zoom;}
+const toS=(x,y)=>[W/2+px+x*zoom,H/2+py+y*zoom];
+const toW=(sx,sy)=>[(sx-W/2-px)/zoom,(sy-H/2-py)/zoom];
+const level=()=>zoom<1.1?0:zoom<2.2?1:zoom<4?2:3;
+const crumbNames=['Whole run','Findings','Agent steps','What each step saw and said'];
+const lit=n=>disp(n.t)<=sim;
+const hop=(a,b)=>Math.min(1.6,.5+Math.hypot(a.x-b.x,a.y-b.y)/220);
+function colorOf(n){
+  if(n.fixedT!=null&&disp(n.fixedT)<=sim)return FIXED;
+  if(n.err&&disp(n.errT)<=sim)return RED;
+  if(n.dep&&G.problems&&sim>=firstErrT())return AMBER;
+  return COL[n.role];
+}
+const firstErrT=()=>Math.min(Infinity,...G.nodes.filter(n=>n.err).map(n=>disp(n.errT)));
+
+// captions: a plain sentence for whatever most recently happened
+function captionAt(t){let best=null;
+  for(const n of G.nodes){
+    const ev=[[disp(n.t),n,'start']];if(n.doneT!=null&&n.doneT!==Infinity)ev.push([disp(n.doneT),n,'done']);
+    if(n.err)ev.push([disp(n.errT),n,'err']);
+    for(const e of ev)if(e[0]<=t&&(!best||e[0]>=best[0])&&n.lvl<=2)best=e;}
+  if(!best)return null;
+  if(S.status==='done'&&S.fixing==null&&t>=disp(lastTime())+.3)
+    return [G.problems?RED:FIXED,G.problems?`Answer ready. ${G.problems} finding${G.problems>1?'s look':' looks'} wrong: click the red dot${G.problems>1?'s':''}.`:'Answer ready. No problems flagged.'];const [,n,kind]=best, who={router:'The panel',analyst:'Analyst',librarian:'Librarian',critic:'Critic',code:'Plain code',paper:'Papers',world:'World model'}[n.role];
+  if(kind==='err')return [RED,`Problem: the checks do not agree with “${short(n.info.ln.claim,80)}”. Click the red dot.`];
+  if(n.key==='q')return [COL.router,'Question asked: '+short(S.question,110)];
+  if(n.info.kind==='finding')return [COL.analyst,'Analyst wrote: “'+short(n.info.ln.claim,90)+'”'];
+  if(kind==='start'&&n.lvl===2)return [COL[n.role],`${who}: ${n.label.toLowerCase()}…`];
+  return [COL[n.role],`${who}: ${n.label}${n.sub?' — '+short(n.sub,70):''}`];
+}
+
+let lastCap='';
+const capEl=document.getElementById('caption'),statusEl=document.getElementById('status');
+function frame(ts){
+  const dt=Math.min(.1,(ts-last)/1000||0);last=ts;
+  if(S&&playing){if(mode==='live')sim=realNow();else{sim+=dt*speed;if(sim>disp(lastTime())+1.5){playing=false;playBtn.textContent='Play';}}}
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  {const [cx,cy]=toS(0,0),bg=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*.75);
+   bg.addColorStop(0,'#00303D');bg.addColorStop(.45,'#001A24');bg.addColorStop(1,'#000A0F');
+   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);}
+  const d=level(),blink=.5+.5*Math.sin(ts/220);
+  ctx.lineWidth=Math.max(.4,zoom*.5);
+  // lines
+  for(const [a,b,kind] of G.edges){
+    const on=lit(a)&&lit(b);const [x1,y1]=toS(a.x,a.y),[x2,y2]=toS(b.x,b.y);
+    const bad=(a.err||a.dep)&&(b.err||b.dep)&&on&&sim>=firstErrT();
+    ctx.strokeStyle=bad?'rgba(202,103,2,.6)':kind==='faint'?(on?'rgba(10,147,150,.12)':'rgba(0,0,0,0)'):on?'rgba(148,210,189,.24)':'rgba(148,210,189,.05)';
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+  // signals travelling: each dot is reached by a glow from the dot that set it off
+  for(const n of G.nodes){if(!n.parent)continue;
+    const arrive=disp(n.t),h=hop(n,n.parent),k=(sim-(arrive-h))/h;
+    pulse(n.parent,n,k,COL[n.role]);
+    if(n.doneT!=null&&n.lvl===2){const back=disp(n.doneT),k2=(sim-back)/h;pulse(n,n.parent,k2,COL[n.role]);}
+    if(n.fixedT!=null){const ft=disp(n.fixedT),k3=(sim-ft)/h;pulse(n,n.parent,k3,FIXED);}}
+  // dots
+  for(const n of G.nodes){const [x,y]=toS(n.x,n.y);if(x<-60||x>W+60||y<-60||y>H+60)continue;
+    const r=Math.max(1.2,n.r*Math.sqrt(zoom));
+    if(!lit(n)){ctx.fillStyle='#0B2A33';ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();continue;}
+    const c=colorOf(n),age=sim-disp(n.t);
+    if(age>=0&&age<.7){ctx.fillStyle=`rgba(${hex(c)},${.5*(1-age/.7)})`;ctx.beginPath();ctx.arc(x,y,r*(1+age*5),0,7);ctx.fill();}
+    const running=n.lvl===2&&(n.doneT==null||disp(n.doneT)>sim);
+    if(running){ctx.strokeStyle=`rgba(${hex(c)},${.3+.5*blink})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,r+3+blink*2,0,7);ctx.stroke();ctx.lineWidth=Math.max(.4,zoom*.5);}
+    if(n.err&&disp(n.errT)<=sim&&!(n.fixedT!=null&&disp(n.fixedT)<=sim)){const R=r*(2.6+blink*1.4),hg=ctx.createRadialGradient(x,y,r*.6,x,y,R);
+      hg.addColorStop(0,`rgba(187,62,3,${.55*blink+.15})`);hg.addColorStop(.5,`rgba(174,32,18,${.35*blink})`);hg.addColorStop(1,'rgba(155,34,38,0)');
+      ctx.fillStyle=hg;ctx.beginPath();ctx.arc(x,y,R,0,7);ctx.fill();}
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+    if(n.caught&&disp(n.doneT)<=sim){ctx.strokeStyle=RED;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,r+2,0,7);ctx.stroke();ctx.lineWidth=Math.max(.4,zoom*.5);}
+    if(n.fixedT!=null&&disp(n.fixedT)<=sim){ctx.strokeStyle='#F2EBDA';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(x,y,r+2.5,0,7);ctx.stroke();ctx.lineWidth=Math.max(.4,zoom*.5);}
+    if(sel&&sel.key===n.key){ctx.strokeStyle='#F2EBDA';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.arc(x,y,r+6,0,7);ctx.stroke();ctx.setLineDash([]);ctx.lineWidth=Math.max(.4,zoom*.5);}
+    // more words appear the deeper you zoom
+    const show=n.lvl===0||(n.lvl===1&&d>=0)||(n.lvl===2&&d>=1)||(n.lvl===3&&d>=3);
+    if(show){const red=n.err&&disp(n.errT)<=sim&&colorOf(n)===RED;
+      ctx.fillStyle=red?'#F07A66':colorOf(n)===AMBER?'#F5C25C':n.fixedT!=null&&colorOf(n)===FIXED?'#C7E3D4':'rgba(242,235,218,.9)';
+      ctx.font=`${n.lvl===0?14:n.lvl===1?12:n.lvl===2?11:10}px -apple-system,sans-serif`;
+      const label=n.lvl===1&&d<1?short(n.label,34):n.label;ctx.fillText(label,x+r+5,y+4);
+      if(n.lvl===2&&d>=2&&n.sub&&disp(n.doneT)<=sim){ctx.fillStyle='rgba(148,180,174,.95)';ctx.font='10px -apple-system,sans-serif';ctx.fillText(short(n.sub,60),x+r+5,y+17);}}
+  }
+  if(S){const c=captionAt(sim);const key=c?c[1]:'';if(key!==lastCap&&c){lastCap=key;capEl.innerHTML=`<i style="background:${c[0]}"></i>${esc(c[1])}`;}
+    statusEl.textContent=statusText();}
+  document.getElementById('crumbs').innerHTML=crumbNames.map((s,i)=>i===d?`<b>${s}</b>`:`<span>${s}</span>`).join(' &rsaquo; ');
+  requestAnimationFrame(frame);
+}
+function pulse(a,b,k,col){if(k<0||k>1)return;const [x,y]=toS(a.x+(b.x-a.x)*k,a.y+(b.y-a.y)*k);
+  if(x<-10||x>W+10||y<-10||y>H+10)return;const r=Math.max(1.6,zoom*1.8);
+  const g=ctx.createRadialGradient(x,y,0,x,y,r*4);g.addColorStop(0,`rgba(${hex(col)},.95)`);g.addColorStop(1,`rgba(${hex(col)},0)`);
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r*4,0,7);ctx.fill();}
+function statusText(){
+  if(S.status==='running')return 'Live run…';
+  if(S.fixing!=null)return `Checking finding ${S.fixing+1} again…`;
+  if(S.status==='error')return 'The run stopped: '+short(S.error,60);
+  const p=G.problems;const spend=`$${(S.spend||0).toFixed(2)} spent`;
+  if(mode==='replay'&&playing)return `Replaying… ${Math.min(100,Math.round(sim/disp(lastTime())*100))}%`;
+  return p?`${p} problem${p>1?'s':''} found · ${spend}`:`No problems found · ${spend}`;
+}
+requestAnimationFrame(frame);
+
+// ---------- keeping up with the server ----------
+async function poll(){
+  try{const s=await TR.getState();
+    if(s.demoMissing)document.getElementById('emptymsg').textContent='The recorded run is not ready yet.';
+    const first=!S;S=s;started=s.started||0;offset=(s.now||Date.now()/1000)-Date.now()/1000;
+    const hasRun=!!(s.trace&&s.trace.lanes&&s.trace.lanes.length)||s.status==='running';
+    document.getElementById('empty').style.display=hasRun?'none':'flex';
+    const key=String(s.started||'');
+    build(s);
+    if(key!==runKey){runKey=key;fitted=false;
+      // a finished run plays back once; a run in progress is shown live
+      if(s.status==='running')goLive();else startReplay();}
+    if(!fitted&&G.nodes.length>3){fit();fitted=true;}
+    if((s.status==='running'||s.fixing!=null)&&mode!=='live')goLive();
+    if(sel){const again=G.byKey[sel.key];if(again){sel=again;if(panel.classList.contains('open')&&!typing())openPanel(again);}}
+  }catch(e){statusEl.textContent='The app does not respond. Make sure app.py is running.';}
+}
+const typing=()=>document.activeElement&&document.activeElement.tagName==='TEXTAREA';
+poll();setInterval(poll,1500);
+
+// ---------- controls ----------
+const playBtn=document.getElementById('play');
+playBtn.onclick=()=>{if(mode==='live'){startReplay();return;}
+  if(!playing&&sim>disp(lastTime()))sim=0;playing=!playing;playBtn.textContent=playing?'Pause':'Play'};
+document.getElementById('replay').onclick=startReplay;
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;
+  document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',x===b))});
+function zoomAt(sx,sy,f){const [wx,wy]=toW(sx,sy);zoom=Math.min(14,Math.max(.25,zoom*f));px=sx-W/2-wx*zoom;py=sy-H/2-wy*zoom;}
+cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*.0015));},{passive:false});
+const pts=new Map();let drag=null,moved=false,pinch=null;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pts.size===1){drag=[e.clientX,e.clientY,px,py];moved=false;cv.classList.add('drag');}
+  if(pts.size===2){const [a,b]=[...pts.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);moved=true;}});
+cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pts.size===2&&pinch){const [a,b]=[...pts.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);zoomAt((a[0]+b[0])/2,(a[1]+b[1])/2,d/pinch);pinch=d;return;}
+  if(drag){const dx=e.clientX-drag[0],dy=e.clientY-drag[1];if(Math.abs(dx)+Math.abs(dy)>4)moved=true;px=drag[2]+dx;py=drag[3]+dy;}});
+const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;
+  if(pts.size===0){cv.classList.remove('drag');if(drag&&!moved)pick(e.clientX,e.clientY);drag=null;}};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+function pick(sx,sy){let best=null,bd=16;for(const n of G.nodes){if(!lit(n))continue;const [x,y]=toS(n.x,n.y);
+  const dd=Math.hypot(x-sx,y-sy)-n.r*Math.sqrt(zoom);if(dd<bd){bd=dd;best=n}}
+  sel=best;if(best)openPanel(best);else closeP();}
+
+// ---------- the side panel: what a dot is, why it is red, and the fix ----------
+const panel=document.getElementById('panel'),pb=document.getElementById('pbody');
+document.getElementById('close').onclick=closeP;
+function closeP(){panel.classList.remove('open');sel=null}
+const box=(lbl,body,cls='')=>`<div class="box ${cls}">${lbl?`<div class="lbl">${lbl}</div>`:''}${body}</div>`;
+function openPanel(n){
+  const I=n.info;let h='';
+  if(I.kind==='question'){
+    h=`<h3>The question</h3><div class="who">Asked of the panel</div>${box('',esc(I.text))}
+      ${box('This run',`${G.lanes.length} findings · ${S.calls||0} AI calls · $${(S.spend||0).toFixed(2)} spent`)}
+      ${G.problems?box('',`The checks found a problem in ${G.problems} finding${G.problems>1?'s':''}. This answer uses ${G.problems>1?'those findings':'that finding'}, so the answer can be wrong. Look for the red dots.`,'warn'):''}`;
+  } else if(I.kind==='shared'){
+    h=`<h3>${esc(I.n.label)}</h3><div class="who">${esc(I.n.agent)}</div>${box('',esc(I.n.detail||'This step runs one time, before the checks. All later steps use its result.'))}`;
+  } else if(I.kind==='paper'){const p=I.p;
+    h=`<h3>${esc(p.title)}</h3><div class="who">${esc(p.journal)} ${esc(p.year)}${p.pmid?' · PMID '+esc(p.pmid):''}</div>
+      ${box('How well it matched the question',`${Math.round((p.relevance||0)*100)/100} · ${p.full_text?'full text read':'abstract only'}`)}
+      ${p.passage?box('Best passage',esc(p.passage)):''}
+      ${p.pmid?`<a style="color:var(--link)" href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(p.pmid)}/" target="_blank" rel="noopener">Open on PubMed ↗</a>`:''}`;
+  } else if(I.kind==='wfinding'){const f=I.f;
+    const size=f.effect!=null&&f.effect_kind!=='none'?` · ${esc(f.effect_kind)} ${esc(f.effect)}`:'';
+    h=`<h3>${esc(f.subject)} → ${esc(f.direction)} ${esc(f.outcome)}</h3>
+      <div class="who">World model · from PMID ${esc(f.pmid)}${size}${f.p_value!=null?' · p='+esc(f.p_value):''}${f.adjusted?' · adjusted':''}</div>
+      ${box('What the paper says, word for word',esc(f.quote))}
+      ${f.cohort?box('In whom',esc(f.cohort)):''}
+      ${box('Why it is here','The world model read this out of a paper passage and checked the quote is really in it. It keeps it for later runs, so the same paper is not read again. A finding about the same thing is judged against it.')}
+      <a style="color:var(--link)" href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(f.pmid)}/" target="_blank" rel="noopener">Open on PubMed ↗</a>`;
+  } else if(I.kind==='leaf'){
+    h=`<h3>${esc(I.title)}</h3>${I.st?`<div class="who">${esc(I.st.agent)}</div>`:''}${box('',esc(I.text))}`;
+  } else if(I.kind==='step'){const st=I.st;
+    h=`<h3>${esc(st.label)}</h3><div class="who">${esc(st.agent)} · on finding ${I.i+1}${st.took?` · took ${st.took}s`:''}</div>
+      ${st.state==='running'?box('','This step is running now.'):''}
+      ${st.detail?box('Result',esc(st.detail),n.caught?'err':''):''}
+      ${st.why?box('Reason',esc(st.why)):''}
+      ${st.saw?box('What it saw',esc(st.saw)):''}
+      ${n.caught?box('','This check found the problem. Click the red finding to correct it.','err'):''}
+      ${n.dep?box('','This verdict uses a finding that failed a check.','warn'):''}`;
+  } else if(I.kind==='finding'){
+    h=findingPanel(n,I.ln,I.i);
+  }
+  pb.innerHTML=h;panel.classList.add('open');wire(I);
+}
+function findingPanel(n,ln,i){
+  const steps=Object.fromEntries((ln.steps||[]).map(s=>[s.key,s]));
+  const route=steps.route, fixes=ln.fixes||[];
+  let h=`<h3>Finding ${i+1}</h3><div class="who">Written by the analyst${route?' · '+esc(route.detail):''}</div>`;
+  if(S.fixing===i)return h+box('Checking again',`The librarian and the critic check your corrected finding now.<br><br>“${esc(ln.claim)}”`);
+  if(n.err){
+    h+=box('What the analyst wrote',esc(ln.claim),'err');
+    const caught=(ln.votes||[]).slice(0,2).map((v,k)=>[v,steps[k?'critic':'lit']]).filter(([v])=>v.v<0);
+    caught.forEach(([v,st])=>h+=box('Found by: '+esc(st?st.agent:''),`<b>${esc(v.n)}</b><br>${esc(st&&st.why||v.d)}`));
+    h+=box('How it happened','The analyst writes each finding from memory. It does this before it reads the papers. The papers or a different AI model do not agree with this finding. Thus the finding is possibly wrong, too strong, or made up.');
+    h+=box('What uses it','The Jev router verdict for this finding. The answer to your question.');
+    h+=`<div class="lbl" style="margin-top:14px">Correct this finding</div>
+      <textarea id="fix">${esc(ln.claim)}</textarea>
+      <button class="act" id="go">Fix and check again</button><button class="sec" id="no">This is not wrong</button>
+      <div class="note">A new check uses 2 small AI calls: 1 librarian and 1 critic. Your spending limit applies. The other findings do not change.</div>
+      <div class="msg" id="msg"></div>`;
+  } else {
+    h+=box(fixes.length?'Corrected by you':'The finding',esc(ln.claim),fixes.length?'ok':'');
+    if(ln.dismissed)h+=box('','You marked this finding as not wrong. It is not a problem now.','ok');
+    (ln.votes||[]).forEach(v=>h+=box('',`${v.v>0?'✓':v.v<0?'✗':'–'} ${esc(v.n)}`));
+    fixes.forEach(fx=>h+=box('Before your fix',esc(fx.before)));
+  }
+  return h;
+}
+function wire(I){
+  const go=document.getElementById('go'),no=document.getElementById('no'),msg=document.getElementById('msg');
+  // source.js knows where the run lives: the laptop server, the recorded demo, or live mode.
+  const send=async(work)=>{go.disabled=no.disabled=true;msg.textContent='';
+    try{document.activeElement.blur();await work();await poll();}
+    catch(e){msg.textContent=e.message||'The app does not respond.';}
+    finally{if(document.body.contains(go))go.disabled=no.disabled=false;}};
+  if(go)go.onclick=()=>send(()=>TR.fix(I.i,document.getElementById('fix').value,2,()=>poll()));
+  if(no)no.onclick=()=>send(()=>TR.dismiss(I.i));
+}
+</script>
+</body>
+</html>

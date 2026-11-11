@@ -1,0 +1,29 @@
+# Files the hosted site does not need. Everything else is uploaded:
+# the pages, source.js, the recorded demo run, api/ (live server),
+# app.py (the run logic it imports) and vendor/ (the paper search).
+data/
+bixdata/
+runs/
+.superpowers/
+__pycache__/
+**/__pycache__/
+*.log
+*.jsonl
+*.md
+results*.json
+kosmos_tiered.json
+*_template.html
+serve.py
+router.py
+pipeline.py
+score.py
+golden.py
+recursive.py
+kosmos_adapter.py
+fetch_benchmark.py
+run_boltz.py
+baseline_fingerprint.py
+.env*
+vendor/data_cache/
+*.sqlite*
+loop_*.json

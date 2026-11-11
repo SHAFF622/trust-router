@@ -4,23 +4,36 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#EEF1F6; --surface:#FFFFFF; --raised:#F7F8FB; --ink:#111B30; --muted:#5B6678; --line:#DCE2EB;
-  --accent:#2C47D6; --accent-ink:#FFFFFF; --accent-soft:#E7EBFD;
-  --go:#14804C; --go-soft:#DDF2E6; --warn:#946200; --warn-soft:#FCF1CF;
-  --stop:#C5332A; --stop-soft:#FBE2DF; --idle:#A0AABA;
-  --shadow:0 1px 2px rgba(17,27,48,.06),0 8px 24px rgba(17,27,48,.06);
+  /* Palette: coolors.co/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226
+     Cool teals mean "working / act on it", sand is the neutral middle, and the
+     warm end is kept for trouble only, so a warm colour always means "look here". */
+  --bg:#F6F1E4; --surface:#FFFDF7; --raised:#EFE8D6; --ink:#001219; --muted:#3E5A60; --line:#DDD3BC;
+  --accent:#005F73; --accent-ink:#FFFFFF; --accent-soft:#D9EEEA;
+  --go:#00707A; --go-soft:#DCF1EA; --warn:#9A4F00; --warn-soft:#FBEBC8;
+  --stop:#AE2012; --stop-soft:#F8DCD6; --idle:#9AA9A6;
+  --shadow:0 1px 2px rgba(0,18,25,.06),0 8px 24px rgba(0,18,25,.07);
+  --trust:linear-gradient(90deg,#005F73,#0A9396,#94D2BD,#E9D8A6,#EE9B00,#CA6702,#BB3E03,#AE2012,#9B2226);
+  --glow:radial-gradient(1100px 520px at 15% -10%,rgba(10,147,150,.14),transparent 70%),
+         radial-gradient(900px 480px at 105% 0%,rgba(233,216,166,.35),transparent 70%);
+  --btn:linear-gradient(135deg,#005F73,#0A9396);
   --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
   --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#0B111C; --surface:#141C2B; --raised:#1A2335; --ink:#E9EDF5; --muted:#9AA5B7; --line:#273146;
-  --accent:#8EA0FF; --accent-ink:#0B111C; --accent-soft:#1D2646;
-  --go:#4CC48B; --go-soft:#10291D; --warn:#F0C43C; --warn-soft:#2C240F;
-  --stop:#F26A60; --stop-soft:#311715; --idle:#5C677A; --shadow:none; color-scheme:dark}}
+  --bg:#001219; --surface:#04202A; --raised:#082C38; --ink:#F2EBDA; --muted:#94B4AE; --line:#123A46;
+  --accent:#94D2BD; --accent-ink:#001219; --accent-soft:#0B3A42;
+  --go:#94D2BD; --go-soft:#0A2E33; --warn:#EE9B00; --warn-soft:#2E2208;
+  --stop:#E8604C; --stop-soft:#2E0E10; --idle:#3E5E66; --shadow:none;
+  --glow:radial-gradient(1100px 520px at 15% -10%,rgba(10,147,150,.22),transparent 70%),
+         radial-gradient(900px 480px at 105% 0%,rgba(0,95,115,.30),transparent 70%);
+  --btn:linear-gradient(135deg,#0A9396,#94D2BD);
+  color-scheme:dark}}
+/* the trust scale: the whole palette as one bar, from act on it to set aside */
+.wrap::before{content:"";grid-column:1/-1;height:4px;border-radius:4px;background:var(--trust)}
 *{box-sizing:border-box}
-body{margin:0;padding:26px 18px 60px;background:var(--bg);color:var(--ink);
+body{margin:0;padding:26px 18px 60px;background:var(--glow),var(--bg);background-attachment:fixed;color:var(--ink);
 font:15px/1.55 var(--body)}
 .wrap{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
 @media(max-width:1020px){.wrap{grid-template-columns:1fr}}
@@ -35,7 +48,7 @@ textarea{width:100%;min-height:78px;background:var(--raised);color:var(--ink);
 border:1px solid var(--line);border-radius:10px;padding:11px 13px;font:inherit;resize:vertical}
 textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .row{display:flex;flex-wrap:wrap;gap:11px;align-items:center;margin-top:11px}
-button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
+button{background:var(--btn);color:var(--accent-ink);border:0;border-radius:10px;
 padding:10px 20px;font-family:var(--display);font-weight:700;font-size:.93rem;cursor:pointer}
 button:disabled{opacity:.5;cursor:default}
 label{color:var(--muted);font-size:.85rem}
@@ -126,6 +139,16 @@ border-bottom:1px solid var(--line);font-size:.86rem}
 .wk{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--accent);padding-top:3px}
 .wrow .d{color:var(--muted)}
 footer{color:var(--muted);font-size:.78rem}
+/* the strip that says which mode the page is in: recorded demo or live */
+.modebar{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;
+  background:var(--accent-soft);font-size:.88rem;line-height:1.5}
+.modebar[hidden]{display:none}
+.modebar a{color:var(--accent);font-weight:700}
+.modebar .pw{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.modebar input{font:inherit;padding:6px 9px;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);min-width:0;flex:1 1 160px}
+.modebar button{padding:6px 12px;font-size:.85rem}
+.modebar .link{background:none;color:var(--accent);padding:0;font-weight:700;text-decoration:underline}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -133,49 +156,52 @@ footer{color:var(--muted);font-size:.78rem}
   <header>
     <p class="label">Trust router</p>
     <h1>Ask the panel</h1>
-    <p class="sub">An analyst proposes findings, a librarian checks them against published
-      papers, and a reviewer judges whether the evidence holds. Plain code decides what you
-      can act on. No model assigns a verdict.</p>
+    <p class="sub">The analyst writes findings. The librarian checks each finding against
+      the papers. The critic checks if the evidence supports it. Then the Jev router, which is
+      plain code, gives each finding a verdict. No AI model chooses the verdict.</p>
+    <div class="modebar" id="modebar" hidden></div>
   </header>
 
   <section>
     <p class="label">Your research question</p>
-    <textarea id="q" placeholder="e.g. Does higher ESR1 expression predict better survival in ER-positive breast cancer?"></textarea>
+    <textarea id="q" placeholder="Example: Does higher ESR1 expression predict better survival in ER-positive breast cancer?"></textarea>
     <div class="chips" id="chips"></div>
     <div class="row">
       <button id="go">Run the panel</button>
-      <label>Budget $<input type="number" id="budget" value="2" min="0.5" max="20" step="0.5"></label>
-      <span class="sub" id="status" style="margin:0">Idle.</span>
+      <label>Spending limit $<input type="number" id="budget" value="2" min="0.5" max="20" step="0.5"></label>
+      <span class="sub" id="status" style="margin:0">Ready.</span>
     </div>
-    <div class="stat"><span>Calls <b id="calls">0</b></span><span>Spent $<b id="spend">0.00</b></span></div>
+    <div class="stat"><span>AI calls <b id="calls">0</b></span><span>Spent $<b id="spend">0.00</b></span></div>
     <p class="err" id="err"></p>
   </section>
 
   <section><h2>What the agents are doing</h2>
-    <div class="steps" id="steps"><div>Nothing running.</div></div></section>
+    <div class="steps" id="steps"><div>No run yet.</div></div></section>
 
   <section>
     <div class="tabs" id="tabs">
       <button data-v="graph" aria-pressed="true">Graph</button>
       <button data-v="map" aria-pressed="false">Flow</button>
       <button data-v="list" aria-pressed="false">Findings</button>
+      <a href="/brain" id="brainlink" target="_blank" rel="noopener" style="margin-left:auto;align-self:center;padding:0 10px;font-size:.9rem;font-weight:700;color:var(--accent);text-decoration:none">Brain view ↗</a>
     </div>
-    <div id="view"><p class="sub">Ask a question to begin.</p></div>
+    <div id="view"><p class="sub">Type a question to start.</p></div>
   </section>
 
-  <footer>Runs locally. Every finding shows the signals behind its verdict.</footer>
+  <footer>Runs on your computer. Each finding shows the checks behind its verdict.</footer>
 </div>
 
 <section class="lit">
-  <p class="label">Literature agent</p>
-  <h2 style="margin:4px 0 0">What published papers say</h2>
-  <p class="desc">Reads the Pan-Cancer Atlas papers first, then searches 40 million
-    abstracts on Europe PMC. Every passage is ranked against the question, and the
-    librarian judges each finding against what it found.</p>
-  <div id="litbody"><p class="sub">Papers appear once a run starts.</p></div>
+  <p class="label">Librarian</p>
+  <h2 style="margin:4px 0 0">What the papers say</h2>
+  <p class="desc">The librarian reads the Pan-Cancer Atlas papers first. Then it searches
+    40 million abstracts on Europe PMC. It ranks each passage against the question. Then it
+    checks each finding against the best passages.</p>
+  <div id="litbody"><p class="sub">The papers show here when a run starts.</p></div>
 </section>
 </div>
 
+<script src="/source.js"></script>
 <script>
 const EXAMPLES = [
   "Does higher ESR1 expression predict better survival in ER-positive breast cancer?",
@@ -186,7 +212,7 @@ const EXAMPLES = [
 const $ = id => document.getElementById(id);
 const LABEL = {ACT_ON:"Act on it", CHECK:"Check first", SET_ASIDE:"Set aside"};
 const TONE = {ACT_ON:"var(--go)", CHECK:"var(--warn)", SET_ASIDE:"var(--stop)"};
-const SOFT = {ACT_ON:"#14301f", CHECK:"#33270f", SET_ASIDE:"#331818"};
+const SOFT = {ACT_ON:"#0A2E33", CHECK:"#2E2208", SET_ASIDE:"#2E0E10"};
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 $("chips").innerHTML = EXAMPLES.map(e =>
@@ -205,7 +231,7 @@ $("tabs").addEventListener("click", e => {
 // to each finding, the checks converging again, and a verdict at the end. Edges
 // carry colour so you can follow which evidence pushed a finding up or down.
 const trunc = (s, n) => { s = String(s || ""); return s.length > n ? s.slice(0, n-1) + "…" : s; };
-const CHECKS = [["lit","Literature"],["critic","Reviewer"],["testable","Measurable?"]];
+const CHECKS = [["lit","Papers"],["critic","Critic"],["testable","Measurable"]];
 
 function mapView(s){
   const t = s.trace || {shared: [], lanes: []};
@@ -279,7 +305,7 @@ function mapView(s){
           ${n && n.vote != null ? (n.vote>0?"+":n.vote<0?"−":"·") + " " : ""}${esc(name)}</text>
         ${n && n.vote != null ? `<text x="${X.chk+WD.chk-9}" y="${y+15}" font-size="9"
           text-anchor="end" font-family="var(--mono)" fill="${col(n.vote)}">${
-            n.vote>0?"supports":n.vote<0?"doubt":"neutral"}</text>` : ""}
+            n.vote>0?"supports":n.vote<0?"doubt":"unclear"}</text>` : ""}
       </g>`;
       svg += edge(X.chk+WD.chk, y+11, X.route, cy, col(n && n.vote), !!n);
     });
@@ -296,16 +322,16 @@ function mapView(s){
       : {label:"—", state:"pending"});
   });
 
-  return `<h2>How each finding was reached</h2>
-    <p class="sub" style="margin-bottom:12px">Every box is a step that actually ran.
-      Lines turn green where a check supported the finding and red where it raised a
-      doubt. Only the router and the testable check are plain code; the rest are models.</p>
+  return `<h2>How the panel got each finding</h2>
+    <p class="sub" style="margin-bottom:12px">Each box is a step that ran. A green line means
+      a check supports the finding. A red line means a check has a doubt. The Jev router and
+      the measurable check are plain code. The other steps are AI models.</p>
     <div class="map"><svg viewBox="0 0 ${W} ${H}" role="img" style="min-width:1000px;width:100%;height:auto"
-      aria-label="A map of how each finding was reached">${svg}</svg></div>
+      aria-label="A map of how the panel got each finding">${svg}</svg></div>
     <div class="legend">
       <span style="color:var(--go)">— supports</span>
-      <span style="color:var(--stop)">— raises a doubt</span>
-      <span style="color:var(--muted)">faded = not reached yet</span>
+      <span style="color:var(--stop)">— has a doubt</span>
+      <span style="color:var(--muted)">faded = not done yet</span>
     </div>`;
 }
 
@@ -339,26 +365,26 @@ function paper(p){
 const KIND = {
   // Bright, clearly different colours: the drawing is shrunk to fit the panel,
   // so muted shades or near-matches stop being readable at that size.
-  question:  {c:"#818CF8", r:36, label:"Question"},
-  orch:      {c:"#A855F7", r:32, label:"Orchestrator"},
-  agent:     {c:"#EC4899", r:30, label:"Agent"},
-  finding:   {c:"#3B82F6", r:27, label:"Finding"},
-  check:     {c:"#22D3EE", r:21, label:"Check"},
-  paper:     {c:"#94A3B8", r:20, label:"Abstract only"},
-  paperfull: {c:"#34D399", r:23, label:"Full text read"},
-  router:    {c:"#F97316", r:23, label:"Jev router"},
-  ACT_ON:    {c:"#22C55E", r:26, label:"Act on it"},
-  CHECK:     {c:"#FACC15", r:26, label:"Check first"},
-  SET_ASIDE: {c:"#EF4444", r:26, label:"Set aside"},
+  question:  {c:"#E9D8A6", r:36, label:"Question"},
+  orch:      {c:"#005F73", r:32, label:"Analyst"},
+  agent:     {c:"#0A9396", r:30, label:"Librarian"},
+  finding:   {c:"#94D2BD", r:27, label:"Finding"},
+  check:     {c:"#4FB3A9", r:21, label:"Check"},
+  paper:     {c:"#4A6670", r:20, label:"Abstract only"},
+  paperfull: {c:"#C7E3D4", r:23, label:"Full text read"},
+  router:    {c:"#F6F1E4", r:23, label:"Jev router"},
+  ACT_ON:    {c:"#0A9396", r:26, label:"Act on it"},
+  CHECK:     {c:"#EE9B00", r:26, label:"Check first"},
+  SET_ASIDE: {c:"#AE2012", r:26, label:"Set aside"},
 };
 
 // Three separate views, not one graph zoomed. Each level holds only the nodes
 // that belong to it and is laid out on its own, so the canvas is never crowded.
 // A scientist steps in and out with buttons; nothing overlaps at any depth.
 const LEVELS = [
-  {id:0, name:"The run",        hint:"Who did what, and how each finding ended up."},
-  {id:1, name:"The checks",     hint:"The three checks on each finding and how Jev used them."},
-  {id:2, name:"The papers",     hint:"Every paper the librarian read, and how well it matched."},
+  {id:0, name:"The run",        hint:"Who did each step, and the verdict for each finding."},
+  {id:1, name:"The checks",     hint:"The 3 checks on each finding, and how the Jev router used them."},
+  {id:2, name:"The papers",     hint:"Each paper that the librarian read, and how well it matched."},
 ];
 
 function buildGraph(s, level, pick){
@@ -373,18 +399,18 @@ function buildGraph(s, level, pick){
 
   // --- level 2: the librarian and the papers it read ------------------------
   if (level === 2) {
-    add("lib", "agent", "Librarian", {title:"Searched the literature",
+    add("lib", "agent", "Librarian", {title:"Searched the papers",
       body:by.papers ? by.papers.detail : "", who:by.papers ? by.papers.agent : "Librarian",
-      why:"Searches Europe PMC and the Pan-Cancer Atlas, then ranks every passage so "
-        + "the later checks see the most relevant text first.", saw:"the question"});
+      why:"The librarian searches Europe PMC and the Pan-Cancer Atlas. It ranks each "
+        + "passage, so the checks see the best text first.", saw:"the question"});
     (s.papers || []).slice(0, 12).forEach((p, i) => {
       const id = "p"+i;
       add(id, p.full_text ? "paperfull" : "paper", p.relevance+"%", {
         title:p.title, body:p.passage || "(no matching passage)",
         who:[p.authors, p.journal, p.year].filter(Boolean).join(" · ") || "unknown",
         why:p.full_text ? `Full text read: ${p.paragraphs} paragraphs searched.`
-                        : "Abstract only; the full text was never searched.",
-        saw:`Ranked ${p.relevance}% against the question. PMID ${p.pmid}.`}, "lib");
+                        : "Abstract only. The librarian did not search the full text.",
+        saw:`Match to the question: ${p.relevance}%. PMID ${p.pmid}.`}, "lib");
       link("lib", id, p.full_text ? "READ FULL" : "ABSTRACT", p.relevance >= 50 ? "up" : null);
     });
     return {N, E};
@@ -396,9 +422,9 @@ function buildGraph(s, level, pick){
     chosen.forEach(i => {
       const ln = lanes[i]; if (!ln) return;
       const f = "f"+i;
-      add(f, "finding", "Finding "+(i+1), {title:"Proposed finding", body:ln.claim || "…",
-        who:"Orchestrator", why:"One of the claims the question was split into.",
-        saw:"the question and the ranked passages"});
+      add(f, "finding", "Finding "+(i+1), {title:"Finding", body:ln.claim || "…",
+        who:"Analyst", why:"The analyst wrote this finding to answer part of the question.",
+        saw:"only the question. The analyst does not see the papers."});
       (ln.steps || []).filter(x => x.key !== "route").forEach(st => {
         const c = f+"_"+st.key;
         add(c, "check", st.label.split(" ")[0], {title:st.label, body:st.detail,
@@ -409,45 +435,44 @@ function buildGraph(s, level, pick){
           st.vote > 0 ? "up" : st.vote < 0 ? "down" : null);
       });
       const route = (ln.steps || []).find(x => x.key === "route");
-      add(f+"_r", "router", "Jev", {title:"Jev router decided",
+      add(f+"_r", "router", "Jev router", {title:"Jev router verdict",
         body:route ? route.detail : "waiting", who:route ? route.agent : "Plain code",
         why:route ? route.why : "", saw:route ? route.saw : "",
         took:route ? route.took : null, at:route ? route.at : null});
       if (ln.tier) {
         add(f+"_v", ln.tier, LABEL[ln.tier], {title:LABEL[ln.tier],
-          body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Verdict",
-          why:route ? route.why : "", saw:"the three checks"});
-        link(f+"_r", f+"_v", "ROUTED TO", tierTone(ln));
+          body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Jev router",
+          why:route ? route.why : "", saw:"the 3 checks"});
+        link(f+"_r", f+"_v", "VERDICT", tierTone(ln));
       }
     });
     return {N, E};
   }
 
   // --- level 0: everything, connected ---------------------------------------
-  add("q", "question", "Question", {title:"The scientist's question",
-    body:s.question || "(none yet)", who:"You",
-    why:"Everything below is an attempt to answer this.", saw:"—"});
+  add("q", "question", "Question", {title:"Your question",
+    body:s.question || "(no question yet)", who:"You",
+    why:"All the steps below try to answer this question.", saw:"—"});
   if (by.papers) {
     add("lib", "agent", "Librarian", {title:by.papers.label, body:by.papers.detail,
       who:by.papers.agent, state:by.papers.state,
-      why:"Searches and ranks published work so later checks have real evidence.",
+      why:"The librarian searches and ranks the papers. Then the checks have real evidence.",
       saw:"the question"});
-    link("q", "lib", "SEARCHED FOR");
+    link("q", "lib", "SEARCHES");
   }
   if (by.propose) {
-    add("ana", "orch", "Orchestrator", {title:"Splits the question into findings",
+    add("ana", "orch", "Analyst", {title:"Writes the findings",
       body:by.propose.detail, who:by.propose.agent, state:by.propose.state,
-      why:"It decides what separate claims are worth checking. Every finding came from here.",
-      saw:"the question" + (by.papers ? " and the ranked passages" : "")});
-    link("q", "ana", "ANSWERED BY");
-    if (by.papers) link("lib", "ana", "GROUNDED");
+      why:"The analyst decides which findings to check. Each finding comes from here.",
+      saw:"only the question. The analyst does not see the papers."});
+    link("q", "ana", "SENT TO");
   }
   lanes.forEach((ln, i) => {
     const f = "f"+i;
-    add(f, "finding", "Finding "+(i+1), {title:"Proposed finding", body:ln.claim || "…",
-      who:"Orchestrator", why:"One of the claims the question was split into.",
-      saw:"the question and the ranked passages"});
-    link("ana", f, "PROPOSED");
+    add(f, "finding", "Finding "+(i+1), {title:"Finding", body:ln.claim || "…",
+      who:"Analyst", why:"The analyst wrote this finding to answer part of the question.",
+      saw:"only the question. The analyst does not see the papers."});
+    link("ana", f, "WROTE");
     (ln.steps || []).forEach(st => {
       if (st.key === "route") return;
       const c = f+"_"+st.key;
@@ -459,15 +484,15 @@ function buildGraph(s, level, pick){
         st.vote > 0 ? "up" : st.vote < 0 ? "down" : null);
     });
     const route = (ln.steps || []).find(x => x.key === "route");
-    add(f+"_r", "router", "Jev", {title:"Jev router decided",
+    add(f+"_r", "router", "Jev router", {title:"Jev router verdict",
       body:route ? route.detail : "waiting", who:route ? route.agent : "Plain code",
       why:route ? route.why : "", saw:route ? route.saw : "",
       took:route ? route.took : null, at:route ? route.at : null});
     if (ln.tier) {
       add(f+"_v", ln.tier, LABEL[ln.tier], {title:LABEL[ln.tier],
-        body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Verdict",
-        why:route ? route.why : "", saw:"the three checks"});
-      link(f+"_r", f+"_v", "ROUTED TO", tierTone(ln));
+        body:"Trust "+ln.trust+". "+(ln.claim||""), who:"Jev router",
+        why:route ? route.why : "", saw:"the 3 checks"});
+      link(f+"_r", f+"_v", "VERDICT", tierTone(ln));
     }
   });
   return {N, E};
@@ -654,7 +679,7 @@ function graphView(s){
       <!-- Labels are often wider than their circle and sit on bright colours, so a
            dark outline keeps the white words readable wherever they land. -->
       <text x="${n.x.toFixed(1)}" y="${(n.y+6).toFixed(1)}" text-anchor="middle"
-        font-size="16" font-weight="700" fill="#fff" stroke="#0B111C" stroke-width="4"
+        font-size="16" font-weight="700" fill="#fff" stroke="#001219" stroke-width="4"
         stroke-linejoin="round" paint-order="stroke" pointer-events="none"
         >${esc(trunc(n.text, 12))}</text>
       ${cap ? capText(n, k, cap) : ""}
@@ -667,9 +692,9 @@ function graphView(s){
   const kinds = [...new Set(N.map(n => n.kind))];
   const dots = kinds.map(k => `<span><i class="dot" style="background:${KIND[k].c}"></i>${KIND[k].label}</span>`).join("");
   const arrows = [
-    ["var(--go)",   "supported the finding"],
-    ["var(--stop)", "raised a doubt"],
-    ["var(--line)", "passed work along"],
+    ["var(--go)",   "supports the finding"],
+    ["var(--stop)", "has a doubt"],
+    ["var(--line)", "sends work on"],
   ].map(([c, t]) => `<span><i class="arr" style="background:${c}"></i>${t}</span>`).join("");
   const legend = `<div class="key"><div class="krow"><b>Circles</b>${dots}</div>
     <div class="krow"><b>Arrows</b>${arrows}</div></div>`;
@@ -678,15 +703,15 @@ function graphView(s){
   const steps = LEVELS.map(l => `<button class="step" data-l="${l.id}"
     aria-pressed="${l.id === LEVEL}">${l.name}</button>`).join("");
   const deeper = LEVEL < 2
-    ? `<button class="godeep" data-l="${LEVEL+1}">Go deeper: ${LEVELS[LEVEL+1].name} &rarr;</button>` : "";
+    ? `<button class="godeep" data-l="${LEVEL+1}">Zoom in: ${LEVELS[LEVEL+1].name} &rarr;</button>` : "";
   const back = LEVEL > 0 ? `<button class="crumb" data-l="${LEVEL-1}">&larr; Back</button>` : "";
   const only = LEVEL === 1 && PICK_F
-    ? `<button class="crumb" id="allf">Show every finding</button>` : "";
+    ? `<button class="crumb" id="allf">Show all findings</button>` : "";
 
   return `<div class="stepbar">${steps}</div>
     <h2>${esc(LEVELS[LEVEL].name)}</h2>
     <p class="sub" style="margin-bottom:10px">${esc(LEVELS[LEVEL].hint)}
-      ${LEVEL === 0 ? "Click a finding, then go deeper to see only its checks." : ""}</p>
+      ${LEVEL === 0 ? "Click a finding. Then zoom in to see only its checks." : ""}</p>
     <div class="map" id="gwrap"><svg id="gsvg" viewBox="0 0 ${W} ${H}"
       style="width:100%;height:auto" role="img"
       aria-label="${esc(LEVELS[LEVEL].name)}: a map of the agents and their work">
@@ -699,26 +724,26 @@ function graphView(s){
 
 function inspect(N){
   const n = N.find(x => x.id === PICKED);
-  if (!n) return `<p class="sub" style="margin-top:14px">Click any circle to see who did
-    it, what they concluded, when, and why.</p>`;
+  if (!n) return `<p class="sub" style="margin-top:14px">Click a circle. You see who did the
+    step, what it found, when, and why.</p>`;
   const i = n.info || {};
   const row = (k, label, body) => body ? `<div class="wrow">
     <span class="wk">${k}</span><span><b>${label}</b><br><span class="d">${esc(body)}</span></span></div>` : "";
   const when = i.took != null
     ? `Took ${i.took}s${i.at ? ", at " + new Date(i.at*1000).toLocaleTimeString() : ""}`
-    : i.state === "running" ? "Running now" : "";
-  const effect = i.vote > 0 ? "Raised trust in this finding. A supporting check can lift a "
-      + "finding toward Act on it, but never past what the other checks allow."
-    : i.vote < 0 ? "Lowered trust in this finding. Two doubts send it to Set aside."
-    : i.vote === 0 ? "Left trust unchanged." : "";
+    : i.state === "running" ? "This step is running now." : "";
+  const effect = i.vote > 0 ? "This check raised the trust score. It cannot move the "
+      + "finding past what the other checks allow."
+    : i.vote < 0 ? "This check lowered the trust score. Two doubts give the verdict Set aside."
+    : i.vote === 0 ? "This check did not change the trust score." : "";
   return `<div class="inspector" style="border-left:4px solid ${KIND[n.kind].c}">
     <div class="ihead"><b>${esc(i.title || n.text)}</b>
       <span class="pill" style="background:var(--raised);color:var(--muted)">${esc(KIND[n.kind].label)}</span></div>
     ${row("WHO", "Who did it", i.who)}
-    ${row("WHAT", "What it concluded", i.body)}
+    ${row("WHAT", "What it found", i.body)}
     ${row("WHEN", "When", when)}
-    ${row("WHY", "Why it concluded that", i.why)}
-    ${row("SAW", "What it was shown", i.saw)}
+    ${row("WHY", "Why", i.why)}
+    ${row("SAW", "What it saw", i.saw)}
     ${row("EFFECT", "Effect on the verdict", effect)}
   </div>`;
 }
@@ -731,7 +756,7 @@ function render(){
       : view === "map" ? mapView(LAST) : listView(LAST);
   } catch (err) {
     console.error(err);
-    $("view").innerHTML = `<p class="err">This view could not be drawn: ${esc(err.message)}</p>`;
+    $("view").innerHTML = `<p class="err">This view failed to draw: ${esc(err.message)}</p>`;
     return;
   }
   if (view === "graph") {
@@ -760,8 +785,8 @@ function render(){
 }
 
 function listView(s){
-  if (!s.claims.length) return '<p class="sub">Ask a question to begin.</p>';
-  return `<h2>Findings, sorted by what you can act on</h2>` + [...s.claims]
+  if (!s.claims.length) return '<p class="sub">Type a question to start.</p>';
+  return `<h2>Findings, highest trust score first</h2>` + s.claims.filter(Boolean)
     .sort((a,b) => b.trust - a.trust).map(c => `
       <div class="claim ${c.tier}">
         <div class="ch"><div>${esc(c.text)}</div>
@@ -772,27 +797,79 @@ function listView(s){
       </div>`).join("");
 }
 
+let clickErr = "";   // an error from the last click; stays until the next click
 $("go").onclick = async () => {
-  $("err").textContent = "";
-  const r = await fetch("/api/run", {method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({question: $("q").value, budget: +$("budget").value})});
-  const b = await r.json();
-  if (b.error) $("err").textContent = b.error;
+  $("err").textContent = clickErr = "";
+  if (TR.mode === "demo") { location.href = "/live"; return; }
+  if (TR.mode === "live" && !TR.password()) {
+    $("err").textContent = "Type the password at the top of the page first."; return;
+  }
+  try {
+    // Local mode returns at once and the page asks for updates. Live mode streams
+    // every update here, so the page redraws as each one arrives.
+    const p = TR.run($("q").value, +$("budget").value, () => poll());
+    if (TR.mode === "live") $("go").disabled = true;
+    await p;
+  } catch (e) { $("err").textContent = clickErr = e.message; }
+  poll();
 };
+
+// What the strip at the top says, for each mode. See source.js for the modes.
+function setupMode(){
+  const bar = $("modebar");
+  $("brainlink").href = TR.brain;
+  if (TR.mode === "demo") {
+    bar.hidden = false;
+    bar.innerHTML = `<b>Recorded run.</b> This page shows a real run that we saved. You can
+      look at each step, but you cannot ask a new question here.
+      <a href="/live">Open the live app</a>. It needs a password.
+      <a href="/results">See the benchmark results</a>.`;
+    $("q").readOnly = true; $("budget").disabled = true;
+    $("go").textContent = "Ask your own question → live app";
+    $("chips").hidden = true;
+  } else if (TR.mode === "live") {
+    bar.hidden = false;
+    $("budget").max = 2; if (+$("budget").value > 2) $("budget").value = 2;
+    const draw = () => {
+      if (TR.password()) {
+        bar.innerHTML = `<b>Live mode.</b> You are signed in. Each run uses the site owner's AI
+          key and can spend up to $2. <button class="link" id="signout">Sign out</button>`;
+        $("signout").onclick = () => { TR.signOut(); draw(); };
+      } else {
+        bar.innerHTML = `<b>Live mode.</b> Type the password to ask questions. Each run uses the
+          site owner's AI key. <a href="/">See the recorded run</a> instead.
+          <div class="pw"><input type="password" id="pw" placeholder="Password" autocomplete="current-password">
+          <button id="signin">Sign in</button></div><p class="err" id="pwerr"></p>`;
+        const go = async () => {
+          $("pwerr").textContent = "";
+          try { await TR.signIn($("pw").value); draw(); }
+          catch (e) { $("pwerr").textContent = e.message; }
+        };
+        $("signin").onclick = go;
+        $("pw").onkeydown = e => { if (e.key === "Enter") go(); };
+      }
+    };
+    draw();
+  }
+}
+setupMode();
 
 async function poll(){
   try {
-    const s = await (await fetch("/api/state")).json();
-    $("status").textContent = {idle:"Idle.", running:"Running…", done:"Finished.",
-      error:"Stopped."}[s.status] || s.status;
+    const s = await TR.getState();
+    if (TR.mode === "demo") {
+      if (!$("q").value) $("q").value = s.question || "";
+    }
+    $("status").textContent = {idle:"Ready.", running:"Running…", done:"Done.",
+      error:"Stopped with an error."}[s.status] || s.status;
     $("go").disabled = s.status === "running";
     $("calls").textContent = s.calls;
     $("spend").textContent = s.spend.toFixed(2);
-    $("err").textContent = s.error || "";
+    $("err").textContent = s.error || clickErr;
 
     $("steps").innerHTML = s.steps.length
       ? s.steps.map(x => `<div class="${x.done?'done':''}">${x.done?'✓':'·'} ${esc(x.t)}</div>`).join("")
-      : "<div>Nothing running.</div>";
+      : "<div>No run yet.</div>";
     $("steps").scrollTop = $("steps").scrollHeight;
 
     const fresh = !LAST || (LAST.trace && s.trace &&
@@ -803,12 +880,12 @@ async function poll(){
     const st = s.lit_stats || {};
     $("litbody").innerHTML = s.papers.length ? `
       <p class="counts">${st.papers||s.papers.length} papers &middot;
-        ${st.full||0} read in full &middot; ${st.passages||0} strong passages</p>
-      <p class="ranked">Ranked for: ${esc(st.ranked_for || s.question)}</p>
+        ${st.full||0} read in full &middot; ${st.passages||0} good passages</p>
+      <p class="ranked">Ranked against: ${esc(st.ranked_for || s.question)}</p>
       ${shelves(s.papers)}`
       : (s.status === "running"
          ? '<p class="sub">Searching\u2026</p>'
-         : '<p class="sub">Papers appear once a run starts.</p>');
+         : '<p class="sub">The papers show here when a run starts.</p>');
   } catch (e) { /* server restarting; next tick will catch up */ }
 }
 poll(); setInterval(poll, 1500);

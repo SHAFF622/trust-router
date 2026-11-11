@@ -12,3 +12,14 @@ runs/
 
 # Large data, fetched by fetch_benchmark.py
 data/*_protein.pdb
+
+# Brainstorm mockups, local only
+.superpowers/
+.vercel
+.env*
+
+# Paper cache written by the copied paper search
+vendor/data_cache/
+
+# The world model, built up locally by runs (knowledge.py)
+data/world.sqlite*

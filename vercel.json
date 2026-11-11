@@ -1,0 +1,43 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": null,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 300,
+      "includeFiles": "{app.py,knowledge.py,vendor/**}"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(app\\.py|knowledge\\.py|requirements\\.txt|vendor/.*|api/index\\.py|vercel\\.json)",
+      "status": 404
+    },
+    {
+      "src": "/api/live/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/",
+      "dest": "/app.html"
+    },
+    {
+      "src": "/brain",
+      "dest": "/brain.html"
+    },
+    {
+      "src": "/live",
+      "dest": "/app.html"
+    },
+    {
+      "src": "/live/brain",
+      "dest": "/brain.html"
+    },
+    {
+      "src": "/results",
+      "dest": "/index.html"
+    }
+  ]
+}

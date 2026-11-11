@@ -1,0 +1,6 @@
+# Only for the hosted site on Vercel. Running app.py on your laptop needs these too.
+httpx>=0.27
+openai>=1.40
+anthropic>=0.40
+# The world model (vendor/quorum/world). Without it the app works as before.
+tortoise-orm>=0.21
